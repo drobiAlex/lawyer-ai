@@ -1,8 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import {Background, ReactFlow, useEdgesState, useNodesState} from "reactflow";
+import {addEdge, Background, ReactFlow, useEdgesState, useNodesState} from "reactflow";
 import 'reactflow/dist/style.css';
+import {useCallback, useEffect} from "react";
 
 
 type Props = {};
@@ -33,15 +34,15 @@ const Page = (props: Props) => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-  // const edgesWithUpdatedTypes = edges.map((edge) => {
-  //   if (edge.sourceHandle) {
-  //     // @ts-ignore
-  //     const edgeType = nodes.find((node) => node.type === 'custom').data.selects[edge.sourceHandle];
-  //     edge.type = edgeType;
-  //   }
+  useEffect(() => {
+    console.log('nodes', nodes);
+  }, [nodes]);
 
-  //   return edge;
-  // });
+  const onConnect = useCallback(
+    (connection: any) =>
+      setEdges((eds) => addEdge({...connection, animated: true}, eds)),
+    [setEdges]
+  );
 
   return (
     <ReactFlow
@@ -50,6 +51,7 @@ const Page = (props: Props) => {
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       onInit={onInit}
+      onConnect={onConnect}
       attributionPosition="top-right"
     >
       <Background color="#aaa" gap={32}/>

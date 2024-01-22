@@ -1,20 +1,23 @@
 'use client';
-import React from "react";
-import {useRouter} from "next/navigation";
+import React, {useState} from "react";
 import {SelectForm} from "@/components/Onboarding";
+import {Loader2} from "lucide-react";
 
 
 export default function Home() {
-  const router = useRouter();
-
-  function onClick() {
-    router.push('/builder')
-  }
-
+  const [loading, setLoading] = useState(false)
   return (
     <>
       <div className='container flex h-screen w-screen flex-col items-center justify-center'>
-        <SelectForm/>
+        {loading ? (
+          <Loader2 className="w-10 h-10 text-blue-500 animate-spin">
+            <p className='mt-2 text-sm text-slate-500'>Uploading...</p>
+          </Loader2>
+        ) : (
+          <SelectForm
+            setLoading={setLoading}
+          />
+        )}
       </div>
     </>
   )

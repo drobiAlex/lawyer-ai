@@ -16,18 +16,22 @@ const FormSchema = z.object({
     })
 })
 
-export function SelectForm() {
+export function SelectForm({setLoading}: { setLoading: Function }) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   })
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
+    setLoading(true)
+
+    // Sleep for 300 ms (delay)
+    await new Promise((resolve) => setTimeout(resolve, 300))
     await navigateToBuilder()
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-1/3 space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-3/4 md:w-1/3 space-y-6">
         <FormField
           control={form.control}
           name="email"

@@ -10,7 +10,7 @@
     {id: 'hidden-4', data: {label: 'Node 4'}, position: {x: 400, y: 200}},
   ];
 
-  export const initialEdges = [
+  export const initialEdgeses = [
     {id: 'hidden-e1-2', source: 'hidden-1', target: 'hidden-2'},
     {id: 'hidden-e1-3', source: 'hidden-1', target: 'hidden-3'},
     {id: 'hidden-e3-4', source: 'hidden-3', target: 'hidden-4'},

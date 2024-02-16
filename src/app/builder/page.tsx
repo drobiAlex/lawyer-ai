@@ -2,29 +2,34 @@
 
 import * as React from 'react';
 import {useCallback, useEffect, useState} from 'react';
+
 import {addEdge, Background, Panel, ReactFlow, useEdgesState, useNodesState} from "reactflow";
+
 import 'reactflow/dist/style.css';
+import {initialEdgeses, initialNodes} from "@/app/builder/data";
+import {SavedState} from "@/app/builder/types";
+import {SavedStatesList} from "@/components/SavedStatesList";
 import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardFooter, CardHeader, CardTitle} from '@/components/ui/card';
-import {initialEdges, initialNodes} from "@/app/builder/data";
-import {SavedStatesList} from "@/components/SavedStatesList";
 
 
-type Props = {};
-
-const Page = (props: Props) => {
+const Page = () => {
   const [rfInstance, setRfInstance] = useState<any | null>(null);
-  const [saves, setSaves] = useState<Array<Map<string, Object>>>([]);
+  const [saves, setSaves] = useState<Array<SavedState>>();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdgeses);
 
   useEffect(() => {
-    const localStorageSaves = Object.keys(localStorage)
+    // eslint-disable-next-line no-undef
+    const localStorageSaves: Array<SavedState> = Object.keys(localStorage)
       .filter((key) => key.includes('flow_'))
-      .map((key) => ({
-        [key]: JSON.parse(localStorage.getItem(key) || ''),
-      }));
-    // setSaves(localStorageSaves);
+      .map((key) => (
+        {
+          key: key,
+          object: JSON.parse(localStorage.getItem(key) || ''),
+        })
+      );
+    setSaves(localStorageSaves);
     console.log('saves', localStorageSaves);
   }, []);
 
@@ -69,14 +74,14 @@ const Page = (props: Props) => {
       <Panel position='top-right'>
         <Button onClick={onAdd}>Add node</Button>
       </Panel>
-      <Panel position='bottom-right'>
-        {/*<div className="flex flex-col">*/}
+      <Panel position='bottom-right' style={{flexGrow: 1}}>
         <Card>
           <CardHeader>
             <CardTitle>Builder</CardTitle>
           </CardHeader>
           <CardContent>
-            <SavedStatesList saves={saves}/>
+            <SavedStatesList savedStates={saves} appySavedStateCallback={() => {
+            }}/>
           </CardContent>
           <CardFooter>
             <div className="flex justify-around space-x-80">
@@ -85,7 +90,6 @@ const Page = (props: Props) => {
             </div>
           </CardFooter>
         </Card>
-        {/*</div>*/}
       </Panel>
     </ReactFlow>
   );

@@ -1,30 +1,38 @@
 // @flow
 import * as React from 'react';
+
+import {Upload} from "lucide-react";
+
 import {Separator} from "@/components/ui/separator";
 
-type Props = {
-  saves: Array<Object>
-};
 
-export function SavedStatesList(props: Props) {
-  if (props.saves.length === 0) return <>
+export function SavedStatesList(props: {
+  savedStates: Array<SavedState> | undefined
+  appySavedStateCallback: (savedState: SavedState) => void
+}) {
+  const {savedStates, appySavedStateCallback} = props;
+  const applySavedState = (savedState: SavedState) => () => appySavedStateCallback(savedState);
+  if (savedStates?.length === 0) return <>
     <div className="text-sm text-gray-500">No saved flows</div>
   </>
   return (
     <div>
-      <div className="text-sm">Saved flows:</div>
+      <div className="text-sm mb-4">Saved flows:</div>
       {
-        props.saves.map((save) => {
+        savedStates?.map((save) => {
           return (
             <>
-              {/*<div key={save} className="text-sm">*/}
-              {/*  {save}*/}
-              {/*</div>*/}
-              {/*<Separator className="my-2"/>*/}
+              <div className='flex items-center justify-between my-1.5'>
+                <div key={save.key} className="text-sm">
+                  {save.key}
+                </div>
+                <Upload onClick={applySavedState(save)} className="ml-2" size={16}/>
+              </div>
+              <Separator/>
             </>
           )
         })
       }
     </div>
   );
-};
+}

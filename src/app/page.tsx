@@ -1,7 +1,9 @@
 'use client';
 import React, {useState} from "react";
-import {SelectForm} from "@/components/Onboarding";
+
 import {Loader2} from "lucide-react";
+
+import {SelectForm} from "@/components/Onboarding";
 
 
 export default function Home() {

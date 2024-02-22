@@ -6,13 +6,12 @@ import {Separator} from "@/components/ui/separator";
 
 
 export function SavedStatesList(props: {
-  // eslint-disable-next-line no-undef
+  /*global SavedState */
+  /*eslint no-undef: "error"*/
   savedStates: Array<SavedState> | undefined
-  // eslint-disable-next-line no-undef
   appySavedStateCallback: (savedState: SavedState) => void
 }) {
   const {savedStates, appySavedStateCallback} = props;
-  // eslint-disable-next-line no-undef
   const applySavedState = (savedState: SavedState) => () => appySavedStateCallback(savedState);
   if (savedStates?.length === 0) return <>
     <div className="text-sm text-gray-500">No saved flows</div>

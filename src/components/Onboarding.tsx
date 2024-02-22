@@ -1,9 +1,8 @@
 'use client'
 
-import {useState} from "react";
-
 import {zodResolver} from "@hookform/resolvers/zod"
 import {Loader2} from "lucide-react";
+import {useState} from "react";
 import {useForm} from "react-hook-form"
 import * as z from "zod"
 
@@ -26,6 +25,7 @@ function Onboarding() {
     resolver: zodResolver(FormSchema),
   })
 
+  // eslint-disable-next-line no-unused-vars
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setLoading(true)
 

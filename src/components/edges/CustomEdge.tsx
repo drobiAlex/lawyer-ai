@@ -1,5 +1,4 @@
 import { memo } from 'react';
-
 import {BaseEdge, EdgeProps, getStraightPath} from 'reactflow';
 
 function CustomEdge(props: EdgeProps) {

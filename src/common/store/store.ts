@@ -1,24 +1,26 @@
 import {
-  Edge,
+  addEdge,
+  applyEdgeChanges,
+  applyNodeChanges,
+  Connection, Edge,
   EdgeChange,
   Node,
   NodeChange,
-  OnNodesChange,
+  OnConnect,
   OnEdgesChange,
-  applyNodeChanges,
-  applyEdgeChanges,
-  addEdge,
-  Connection, OnConnect,
+  OnNodesChange,
 } from "reactflow"
-
 import {create} from 'zustand'
+
+// eslint-disable-next-line no-unused-vars
+export type addNodeType = (node: Node) => void;
 
 export type RFState = {
   nodes: Node[];
   edges: Edge[];
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
-  addNode: (node: Node) => void;
+  addNode: addNodeType;
   onConnect: OnConnect;
 }
 

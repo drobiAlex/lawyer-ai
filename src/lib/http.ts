@@ -1,6 +1,5 @@
-import {useEffect, useState} from "react";
-
 import axios from "axios";
+import {useEffect, useState} from "react";
 
 const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL;
 

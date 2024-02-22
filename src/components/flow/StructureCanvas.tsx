@@ -1,16 +1,13 @@
+import 'reactflow/dist/style.css';
+
+import React, {useCallback, useEffect, useState} from "react";
 import ReactFlow, {Controls, NodeOrigin} from "reactflow";
+import {ReactFlowInstance} from "reactflow";
 import {shallow} from "zustand/shallow";
 
 import useStore, {RFState} from "@/common/store/store";
-
-import 'reactflow/dist/style.css';
-
 import CustomEdge from "@/components/edges/CustomEdge";
 import CustomNode from "@/components/nodes/CustomNode";
-
-import React, {useCallback, useEffect, useState} from "react";
-
-import {ReactFlowInstance} from "reactflow";
 import {useGetData} from "@/lib/http";
 
 

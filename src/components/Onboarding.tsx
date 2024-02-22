@@ -1,6 +1,9 @@
-"use client"
+'use client'
+
+import {useState} from "react";
 
 import {zodResolver} from "@hookform/resolvers/zod"
+import {Loader2} from "lucide-react";
 import {useForm} from "react-hook-form"
 import * as z from "zod"
 
@@ -16,7 +19,9 @@ const FormSchema = z.object({
     })
 })
 
-export function SelectForm({setLoading}: { setLoading: Function }) {
+function Onboarding() {
+  const [loading, setLoading] = useState(false)
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   })
@@ -26,39 +31,50 @@ export function SelectForm({setLoading}: { setLoading: Function }) {
 
     // Sleep for 300 ms (delay)
     await new Promise((resolve) => setTimeout(resolve, 300))
+    setLoading(false)
     await navigateToBuilder()
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-3/4 md:w-1/3 space-y-6">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({field}) => (
-            <FormItem>
-              <FormLabel>Structure optimisation:</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select what type of structure optimisation do you need"/>
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="1">Tax optimisation</SelectItem>
-                  <SelectItem value="2">Cost of structure</SelectItem>
-                  <SelectItem value="3">Legality</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormDescription>
-                You can change this settings later
-              </FormDescription>
-              <FormMessage/>
-            </FormItem>
-          )}
-        />
-        <Button className="w-full" type="submit">Submit</Button>
-      </form>
-    </Form>
+    <>
+      {loading ? (
+        <Loader2 className="w-10 h-10 text-blue-500 animate-spin">
+          <p className='mt-2 text-sm text-slate-500'>Uploading...</p>
+        </Loader2>
+      ) : (
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="w-3/4 md:w-1/3 space-y-6">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Structure optimisation:</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select what type of structure optimisation do you need"/>
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="1">Tax optimisation</SelectItem>
+                      <SelectItem value="2">Cost of structure</SelectItem>
+                      <SelectItem value="3">Legality</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    You can change this settings later
+                  </FormDescription>
+                  <FormMessage/>
+                </FormItem>
+              )}
+            />
+            <Button className="w-full" type="submit">Submit</Button>
+          </form>
+        </Form>
+      )}
+    </>
   )
 }
+
+export default Onboarding

@@ -18,33 +18,11 @@
   },
   "plugins": [
     "react",
-    "react-hooks"
+    "react-hooks",
+    "simple-import-sort"
   ],
   "rules": {
-    "import/order": [
-      "error",
-      {
-        "groups": [
-          "builtin",
-          "external",
-          "internal"
-        ],
-        "pathGroups": [
-          {
-            "pattern": "react",
-            "group": "external",
-            "position": "before"
-          }
-        ],
-        "pathGroupsExcludedImportTypes": [
-          "react"
-        ],
-        "newlines-between": "always",
-        "alphabetize": {
-          "order": "asc",
-          "caseInsensitive": true
-        }
-      }
-    ]
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error"
   }
 }

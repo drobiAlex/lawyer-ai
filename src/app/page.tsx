@@ -1,26 +1,32 @@
-'use client';
-import React, {useState} from "react";
+import {auth, UserButton} from "@clerk/nextjs";
+import {LogIn} from "lucide-react";
+import Link from "next/link";
 
-import {Loader2} from "lucide-react";
-
-import {SelectForm} from "@/components/Onboarding";
+import Onboarding from "@/components/Onboarding";
+import {Button} from "@/components/ui/button";
 
 
 export default function Home() {
-  const [loading, setLoading] = useState(false)
+  const {userId} = auth()
+  const isAuth = !!userId
   return (
-    <>
-      <div className='container flex h-screen w-screen flex-col items-center justify-center'>
-        {loading ? (
-          <Loader2 className="w-10 h-10 text-blue-500 animate-spin">
-            <p className='mt-2 text-sm text-slate-500'>Uploading...</p>
-          </Loader2>
+    <div className="flex flex-col h-full">
+      <div className="flex flex-row-reverse">
+        <div className="m-2">
+          <UserButton afterSignOutUrl=""/>
+        </div>
+      </div>
+      <div className="flex flex-row h-full w-full justify-center items-center">
+        {isAuth ? (
+          <Onboarding/>
         ) : (
-          <SelectForm
-            setLoading={setLoading}
-          />
+          <Link href="/sign-in">
+            <Button>Sign In to get started
+              <LogIn className="w-4 h-4 ml-2"/>
+            </Button>
+          </Link>
         )}
       </div>
-    </>
+    </div>
   )
 }

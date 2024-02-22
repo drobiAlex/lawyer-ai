@@ -1,98 +1,32 @@
-'use client';
+'use client'
 
-import * as React from 'react';
-import {useCallback, useEffect, useState} from 'react';
+import 'reactflow/dist/base.css';
+import '../../../tailwind.config';
 
-import {addEdge, Background, Panel, ReactFlow, useEdgesState, useNodesState} from "reactflow";
+import React, {useRef} from "react";
 
-import 'reactflow/dist/style.css';
-import {initialEdgeses, initialNodes} from "@/app/builder/data";
-import {SavedState} from "@/app/builder/types";
-import {SavedStatesList} from "@/components/SavedStatesList";
-import {Button} from "@/components/ui/button";
-import {Card, CardContent, CardFooter, CardHeader, CardTitle} from '@/components/ui/card';
+import {Providers} from "@/common/providers/providers";
+import {Sidebar} from "@/components/flow/Sidebar";
+import StructureCanvas from "@/components/flow/StructureCanvas";
 
-
-const Page = () => {
-  const [rfInstance, setRfInstance] = useState<any | null>(null);
-  const [saves, setSaves] = useState<Array<SavedState>>();
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdgeses);
-
-  useEffect(() => {
-    // eslint-disable-next-line no-undef
-    const localStorageSaves: Array<SavedState> = Object.keys(localStorage)
-      .filter((key) => key.includes('flow_'))
-      .map((key) => (
-        {
-          key: key,
-          object: JSON.parse(localStorage.getItem(key) || ''),
-        })
-      );
-    setSaves(localStorageSaves);
-    console.log('saves', localStorageSaves);
-  }, []);
-
-  const onConnect = useCallback(
-    (connection: any) =>
-      setEdges((eds) => addEdge({...connection, animated: true}, eds)),
-    [setEdges]
-  );
-
-  const onSave = useCallback(() => {
-    if (rfInstance) {
-      const flow = rfInstance.toObject();
-      localStorage.setItem(`flow_${+new Date()}`, JSON.stringify(flow));
-    }
-  }, [rfInstance]);
-
-  const getNodeId = () => `randomnode_${+new Date()}`;
-
-  const onAdd = () => {
-    const newNode = {
-      id: getNodeId(),
-      data: {label: 'Added node'},
-      position: {
-        x: Math.random() * window.innerWidth - 100,
-        y: Math.random() * window.innerHeight,
-      }
-    }
-    setNodes([...nodes, newNode]);
-  }
-
+function Builder() {
+  const reactFlowWrapper = useRef(null);
   return (
-    <ReactFlow
-      nodes={nodes}
-      edges={edges}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      onInit={setRfInstance}
-      onConnect={onConnect}
-      attributionPosition="top-right"
-    >
-      <Background color="#aaa" gap={32}/>
-      <Panel position='top-right'>
-        <Button onClick={onAdd}>Add node</Button>
-      </Panel>
-      <Panel position='bottom-right' style={{flexGrow: 1}}>
-        <Card>
-          <CardHeader>
-            <CardTitle>Builder</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <SavedStatesList savedStates={saves} appySavedStateCallback={() => {
-            }}/>
-          </CardContent>
-          <CardFooter>
-            <div className="flex justify-around space-x-80">
-              <Button onClick={onSave}>Save</Button>
-              <Button>Cancel</Button>
-            </div>
-          </CardFooter>
-        </Card>
-      </Panel>
-    </ReactFlow>
+    <div className='flex h-full'>
+      <Providers>
+        <div className="flex w-full max-h-screen" ref={reactFlowWrapper}>
+          <div className="flex-[4]">
+            {/* structure canvas */}
+            <StructureCanvas/>
+          </div>
+          <div className='flex-[1] ml-2 border-gray-200'>
+            {/* sidebar */}
+            <Sidebar/>
+          </div>
+        </div>
+      </Providers>
+    </div>
   );
-};
+}
 
-export default Page;
+export default Builder

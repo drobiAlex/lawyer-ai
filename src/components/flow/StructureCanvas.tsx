@@ -1,14 +1,17 @@
 import 'reactflow/dist/style.css';
 
-import React, {useCallback, useEffect, useState} from "react";
-import ReactFlow, {Controls, NodeOrigin} from "reactflow";
-import {ReactFlowInstance} from "reactflow";
+import React, {useCallback, useMemo, useState} from "react";
+import ReactFlow, {Background, Controls, NodeOrigin, ReactFlowInstance} from "reactflow";
 import {shallow} from "zustand/shallow";
 
 import useStore, {RFState} from "@/common/store/store";
 import CustomEdge from "@/components/edges/CustomEdge";
-import CustomNode from "@/components/nodes/CustomNode";
-import {useGetData} from "@/lib/http";
+import IndividualOwnerNode from "@/components/nodes/IndividualOwnerNode";
+import MainCompanyNode from "@/components/nodes/MainCompanyNode";
+import ClientCustomerNode from "@/components/nodes/ClientCustomerNode";
+import ContractorsNode from "@/components/nodes/ContractorsNode";
+import SubsidiaryCompanyNode from "@/components/nodes/SubsidiaryCompanyNode";
+import UnrelatedCompanyNode from "@/components/nodes/UnrelatedCompanyNode";
 
 
 const selector = (state: RFState) => ({
@@ -21,13 +24,6 @@ const selector = (state: RFState) => ({
 })
 const nodeOrigin: NodeOrigin = [0, 0];
 
-const nodeTypes = {
-  custom: CustomNode
-}
-const edgeTypes = {
-  custom: CustomEdge
-}
-
 function StructureCanvas() {
 
   const {nodes, edges, onNodesChange, onEdgesChange, addNode, onConnect} = useStore(
@@ -35,7 +31,24 @@ function StructureCanvas() {
     shallow
   );
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance<'NodeData', 'EdgeData'>>();
-
+  // const nodeTypes =
+  const nodeTypes = useMemo(
+    () => ({
+      main_company: MainCompanyNode,
+      individual_owner: IndividualOwnerNode,
+      client_customer: ClientCustomerNode,
+      contractor: ContractorsNode,
+      subsidiary_company: SubsidiaryCompanyNode,
+      unrelated_company: UnrelatedCompanyNode
+    }),
+    [],
+  );
+  const edgeTypes = useMemo(
+    () => ({
+      custom: CustomEdge,
+    }),
+    [],
+  );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
@@ -62,7 +75,7 @@ function StructureCanvas() {
 
     addNode({
       id: Math.random().toString(),
-      type: "custom",
+      type: "individual_owner",
       position,
       data: {label: `${type} node`}
     });
@@ -84,6 +97,7 @@ function StructureCanvas() {
       onDrop={onDrop}
       fitView
     >
+      <Background color="#aaa" gap={32}/>
       <Controls showInteractive={false}/>
     </ReactFlow>
   );

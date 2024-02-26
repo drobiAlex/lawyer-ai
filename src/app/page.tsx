@@ -1,3 +1,5 @@
+'use server'
+
 import {auth, UserButton} from "@clerk/nextjs";
 import {LogIn} from "lucide-react";
 import Link from "next/link";
@@ -6,9 +8,10 @@ import Onboarding from "@/components/Onboarding";
 import {Button} from "@/components/ui/button";
 
 
-export default function Home() {
+export default async function Home() {
   const {userId} = auth()
   const isAuth = !!userId
+
   return (
     <div className="flex flex-col h-full">
       <div className="flex flex-row-reverse">

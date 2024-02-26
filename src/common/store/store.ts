@@ -11,6 +11,8 @@ import {
   OnNodesChange,
 } from "reactflow"
 import {create} from 'zustand'
+import axios from "axios";
+import {reqConfig} from "@/lib/http";
 
 // eslint-disable-next-line no-unused-vars
 export type addNodeType = (node: Node) => void;
@@ -18,29 +20,33 @@ export type addNodeType = (node: Node) => void;
 export type RFState = {
   nodes: Node[];
   edges: Edge[];
+  nodeTypes: any;
+  edgeTypes: any;
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   addNode: addNodeType;
   onConnect: OnConnect;
+  fetchContainers: () => void;
 }
 
 const useStore = create<RFState>((set, get) => ({
   nodes: [
     {
       id: 'root',
-      type: 'custom',
-      data: {label: 'React Flow Mind Map'},
+      type: 'individual_owner',
+      data: {label: 'Individual Owner', residence: 'USA'},
       position: {x: 0, y: 0},
     },
   ],
   edges: [],
+  nodeTypes: {},
+  edgeTypes: {},
   onNodesChange: (nodeChanges: NodeChange[]) => {
     set({
       nodes: applyNodeChanges(nodeChanges, get().nodes)
     })
   },
   onEdgesChange: (edgeChanges: EdgeChange[]) => {
-    console.log('edgeChanges', edgeChanges)
     set({
       edges: applyEdgeChanges(edgeChanges, get().edges)
     })
@@ -54,6 +60,12 @@ const useStore = create<RFState>((set, get) => ({
     set({
       edges: addEdge(connection, get().edges)
     })
+  },
+
+  fetchContainers: async () => {
+    const requestConfig = reqConfig('GET', '/containers')
+    const response = await axios(requestConfig);
+
   }
 }));
 

@@ -10,7 +10,7 @@ import {Sidebar} from "@/components/flow/Sidebar";
 import StructureCanvas from "@/components/flow/StructureCanvas";
 
 function Builder() {
-  const reactFlowWrapper = useRef(null);
+  const reactFlowWrapper = useRef(null)
   return (
     <div className='flex h-full'>
       <Providers>

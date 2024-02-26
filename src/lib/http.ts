@@ -1,37 +1,20 @@
-import axios from "axios";
-import {useEffect, useState} from "react";
+import Cookies from "js-cookie";
 
 const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export function useGetData(url: string) {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+const jwt_cookie = () => {
+  return Cookies.get('__session')
+}
 
-  useEffect(() => {
-
-    const reqConfig = {
-      url: BASE_API_URL + url,
-      method: 'get',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+export function reqConfig(method: 'GET' | 'POST', url: string) {
+  return {
+    url: BASE_API_URL + url,
+    method: 'get',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    cookies: {
+      'JWT': jwt_cookie()
     }
-
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const request = await axios(reqConfig);
-        setData(request.data);
-      } catch (error) {
-        // @ts-ignore
-        setError(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [url]);
-
-  return {data, loading, error}
+  }
 }

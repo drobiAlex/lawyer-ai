@@ -6,12 +6,7 @@ import {shallow} from "zustand/shallow";
 
 import useStore, {RFState} from "@/common/store/store";
 import CustomEdge from "@/components/edges/CustomEdge";
-import IndividualOwnerNode from "@/components/nodes/IndividualOwnerNode";
-import MainCompanyNode from "@/components/nodes/MainCompanyNode";
-import ClientCustomerNode from "@/components/nodes/ClientCustomerNode";
-import ContractorsNode from "@/components/nodes/ContractorsNode";
-import SubsidiaryCompanyNode from "@/components/nodes/SubsidiaryCompanyNode";
-import UnrelatedCompanyNode from "@/components/nodes/UnrelatedCompanyNode";
+import {systemSupportedNodes} from "@/components/supported_nodes";
 
 
 const selector = (state: RFState) => ({
@@ -31,18 +26,12 @@ function StructureCanvas() {
     shallow
   );
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance<'NodeData', 'EdgeData'>>();
-  // const nodeTypes =
+
   const nodeTypes = useMemo(
-    () => ({
-      main_company: MainCompanyNode,
-      individual_owner: IndividualOwnerNode,
-      client_customer: ClientCustomerNode,
-      contractor: ContractorsNode,
-      subsidiary_company: SubsidiaryCompanyNode,
-      unrelated_company: UnrelatedCompanyNode
-    }),
+    () => (systemSupportedNodes),
     [],
   );
+
   const edgeTypes = useMemo(
     () => ({
       custom: CustomEdge,
@@ -75,7 +64,7 @@ function StructureCanvas() {
 
     addNode({
       id: Math.random().toString(),
-      type: "individual_owner",
+      type: type,
       position,
       data: {label: `${type} node`}
     });

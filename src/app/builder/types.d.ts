@@ -11,6 +11,7 @@ export type NodeData = {
   residence: string | undefined;
   // type: NodeType;
   attributes: [NodeDataAttributes] | undefined;
+  isPreview?: boolean;
 }
 
 export type NodeDataAttributes = {

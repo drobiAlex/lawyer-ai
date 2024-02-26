@@ -1,8 +1,10 @@
+import axios from "axios";
 import {
   addEdge,
   applyEdgeChanges,
   applyNodeChanges,
-  Connection, Edge,
+  Connection,
+  Edge,
   EdgeChange,
   Node,
   NodeChange,
@@ -11,7 +13,7 @@ import {
   OnNodesChange,
 } from "reactflow"
 import {create} from 'zustand'
-import axios from "axios";
+
 import {reqConfig} from "@/lib/http";
 
 // eslint-disable-next-line no-unused-vars

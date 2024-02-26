@@ -8,7 +8,7 @@ import {NodeData} from "@/app/builder/types";
 function ContractorsNode({id, data}: NodeProps<NodeData>) {
   return (
     <div className="px-6 py-4 rounded-md border bg-white border-stone-400">
-      <div className="flex flex-row w-max items-center">
+      <div className="flex flex-row w-full items-center justify-between">
         <div className="mr-4">
           <ContractorsIcon/>
         </div>
@@ -16,11 +16,11 @@ function ContractorsNode({id, data}: NodeProps<NodeData>) {
           <input defaultValue={data.label}/>
           <h1> Type </h1>
         </div>
-        <div className="flex-1 flex-col">
+        <div className="flex flex-col justify-end">
           <ThreeVerticalDotsIcon/>
         </div>
       </div>
-      <Handle type="source" position={Position.Bottom}/>
+      {!data.isPreview && <Handle type="source" position={Position.Bottom}/> }
     </div>
   )
 }

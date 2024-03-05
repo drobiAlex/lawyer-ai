@@ -1,7 +1,7 @@
-'use server'
+"use server";
 
-import {redirect} from "next/navigation";
+import { redirect } from "next/navigation";
 
 export async function navigateToBuilder() {
-  redirect('/builder')
+  redirect("/builder");
 }

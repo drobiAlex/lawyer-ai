@@ -7,7 +7,8 @@
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
-    "next/core-web-vitals"
+    "next/core-web-vitals",
+    "prettier"
   ],
   "parserOptions": {
     "ecmaVersion": 12,
@@ -16,11 +17,7 @@
       "jsx": true
     }
   },
-  "plugins": [
-    "react",
-    "react-hooks",
-    "simple-import-sort"
-  ],
+  "plugins": ["react", "react-hooks", "simple-import-sort"],
   "rules": {
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",

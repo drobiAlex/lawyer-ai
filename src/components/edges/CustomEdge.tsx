@@ -1,8 +1,8 @@
-import { memo } from 'react';
-import {BaseEdge, EdgeProps, getStraightPath} from 'reactflow';
+import { memo } from "react";
+import { BaseEdge, EdgeProps, getStraightPath } from "reactflow";
 
 function CustomEdge(props: EdgeProps) {
-  const {sourceX, sourceY, targetX, targetY} = props;
+  const { sourceX, sourceY, targetX, targetY } = props;
 
   const [edgePath] = getStraightPath({
     sourceX,

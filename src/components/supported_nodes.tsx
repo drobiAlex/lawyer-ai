@@ -12,4 +12,4 @@ export const systemSupportedNodes = {
   contractor: ContractorsNode,
   subsidiary_company: SubsidiaryCompanyNode,
   unrelated_company: UnrelatedCompanyNode,
-}
+};

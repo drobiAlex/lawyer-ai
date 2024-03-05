@@ -1,13 +1,17 @@
-import 'reactflow/dist/style.css';
+import "reactflow/dist/style.css";
 
-import React, {useCallback, useMemo, useState} from "react";
-import ReactFlow, {Background, Controls, NodeOrigin, ReactFlowInstance} from "reactflow";
-import {shallow} from "zustand/shallow";
+import React, { useCallback, useMemo, useState } from "react";
+import ReactFlow, {
+  Background,
+  Controls,
+  NodeOrigin,
+  ReactFlowInstance,
+} from "reactflow";
+import { shallow } from "zustand/shallow";
 
-import useStore, {RFState} from "@/common/store/store";
+import useStore, { RFState } from "@/common/store/store";
 import CustomEdge from "@/components/edges/CustomEdge";
-import {systemSupportedNodes} from "@/components/supported_nodes";
-
+import { systemSupportedNodes } from "@/components/supported_nodes";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -15,22 +19,17 @@ const selector = (state: RFState) => ({
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
   addNode: state.addNode,
-  onConnect: state.onConnect
-})
+  onConnect: state.onConnect,
+});
 const nodeOrigin: NodeOrigin = [0, 0];
 
 function StructureCanvas() {
+  const { nodes, edges, onNodesChange, onEdgesChange, addNode, onConnect } =
+    useStore(selector, shallow);
+  const [reactFlowInstance, setReactFlowInstance] =
+    useState<ReactFlowInstance<"NodeData", "EdgeData">>();
 
-  const {nodes, edges, onNodesChange, onEdgesChange, addNode, onConnect} = useStore(
-    selector,
-    shallow
-  );
-  const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance<'NodeData', 'EdgeData'>>();
-
-  const nodeTypes = useMemo(
-    () => (systemSupportedNodes),
-    [],
-  );
+  const nodeTypes = useMemo(() => systemSupportedNodes, []);
 
   const edgeTypes = useMemo(
     () => ({
@@ -41,35 +40,37 @@ function StructureCanvas() {
 
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
+    event.dataTransfer.dropEffect = "move";
   }, []);
 
-  const onDrop = useCallback((event: React.DragEvent) => {
-    event.preventDefault();
+  const onDrop = useCallback(
+    (event: React.DragEvent) => {
+      event.preventDefault();
 
-    const type = event.dataTransfer.getData('application/reactflow');
+      const type = event.dataTransfer.getData("application/reactflow");
 
-    if (typeof type === 'undefined' || !type) {
-      return;
-    }
+      if (typeof type === "undefined" || !type) {
+        return;
+      }
 
-    if (!reactFlowInstance) {
-      return;
-    }
+      if (!reactFlowInstance) {
+        return;
+      }
 
-    const position = reactFlowInstance.screenToFlowPosition({
-      x: event.clientX,
-      y: event.clientY
-    });
+      const position = reactFlowInstance.screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
 
-    addNode({
-      id: Math.random().toString(),
-      type: type,
-      position,
-      data: {label: `${type} node`}
-    });
-
-  }, [reactFlowInstance]);
+      addNode({
+        id: Math.random().toString(),
+        type: type,
+        position,
+        data: { label: `${type} node` },
+      });
+    },
+    [reactFlowInstance],
+  );
 
   return (
     <ReactFlow
@@ -86,8 +87,8 @@ function StructureCanvas() {
       onDrop={onDrop}
       fitView
     >
-      <Background color="#aaa" gap={32}/>
-      <Controls showInteractive={false}/>
+      <Background color="#aaa" gap={32} />
+      <Controls showInteractive={false} />
     </ReactFlow>
   );
 }

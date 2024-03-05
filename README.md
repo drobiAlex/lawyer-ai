@@ -5,7 +5,25 @@ TypeScript.
 
 ## Getting Started
 
-### Prerequisites
+### Pre-hook commits
+
+Install and configure husky and lint-staged to run prettier and eslint before each commit.
+
+```shell
+npm install --save-dev husky lint-staged
+npx husky init
+node --eval "fs.writeFileSync('.husky/pre-commit','npx lint-staged\n')"
+```
+
+Add the following to the package.json file
+
+```json
+{
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
+  }
+}
+```
 
 First, run the development server:
 

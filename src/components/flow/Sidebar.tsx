@@ -21,6 +21,8 @@ export function Sidebar() {
       attributes: undefined,
       type: "",
       isPreview: true,
+      IconComponent: <div />,
+      onClick: {},
     },
     selected: false,
     isConnectable: false,
@@ -31,33 +33,30 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="p-3">
-      <div>Elements:</div>
-      <div className="pt-3 flex flex-col gap-4">
-        {Array.from(Object.entries(systemSupportedNodes)).map(
-          ([nodeType, NodeClass], index) => {
-            const data = {
-              ...nodeProps.data,
-              type: nodeType,
-              label: nodeType,
-            };
-            const props = {
-              ...nodeProps,
-              type: nodeType,
-              data: data,
-            };
-            return (
-              <div
-                key={index}
-                draggable
-                onDragStart={(event) => onDragStart(event, nodeType)}
-              >
-                <NodeClass {...props} />
-              </div>
-            );
-          },
-        )}
-      </div>
-    </aside>
+    <div className="pt-3 flex flex-col gap-4">
+      {Array.from(Object.entries(systemSupportedNodes)).map(
+        ([nodeType, NodeClass], index) => {
+          const data = {
+            ...nodeProps.data,
+            type: nodeType,
+            label: nodeType,
+          };
+          const props = {
+            ...nodeProps,
+            type: nodeType,
+            data: data,
+          };
+          return (
+            <div
+              key={index}
+              draggable
+              onDragStart={(event) => onDragStart(event, nodeType)}
+            >
+              <NodeClass {...props} />
+            </div>
+          );
+        },
+      )}
+    </div>
   );
 }

@@ -14,14 +14,17 @@ import {
 } from "reactflow";
 import { create } from "zustand";
 
-import { reqConfig } from "@/lib/http";
+import { getEndpoint, reqConfig } from "@/lib/http";
 
 // eslint-disable-next-line no-unused-vars
 export type addNodeType = (node: Node) => void;
+// eslint-disable-next-line no-unused-vars
+type setSelectedNodeType = (nodeId: string | null) => void;
 
 export type RFState = {
   nodes: Node[];
   edges: Edge[];
+  selectedNode: Node | null;
   nodeTypes: any;
   edgeTypes: any;
   onNodesChange: OnNodesChange;
@@ -29,20 +32,15 @@ export type RFState = {
   addNode: addNodeType;
   onConnect: OnConnect;
   fetchContainers: () => void;
+  setSelectedNode: setSelectedNodeType;
 };
 
 const useStore = create<RFState>((set, get) => ({
-  nodes: [
-    {
-      id: "root",
-      type: "individual_owner",
-      data: { label: "Individual Owner", residence: "USA" },
-      position: { x: 0, y: 0 },
-    },
-  ],
+  nodes: [],
   edges: [],
   nodeTypes: {},
   edgeTypes: {},
+  selectedNode: null,
   onNodesChange: (nodeChanges: NodeChange[]) => {
     set({
       nodes: applyNodeChanges(nodeChanges, get().nodes),
@@ -65,8 +63,17 @@ const useStore = create<RFState>((set, get) => ({
   },
 
   fetchContainers: async () => {
-    const requestConfig = reqConfig("GET", "/containers");
-    const response = await axios(requestConfig);
+    const response = await axios.get(getEndpoint("jurisdictions"), reqConfig());
+  },
+  setSelectedNode: (nodeId) => {
+    if (!nodeId) {
+      set({
+        selectedNode: null,
+      });
+      return;
+    } else {
+      set({ selectedNode: get().nodes.find((n) => n.id === nodeId) });
+    }
   },
 }));
 

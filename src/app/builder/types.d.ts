@@ -14,7 +14,8 @@ export type BaseNodeData = {
   attributes: [NodeDataAttributes] | undefined;
   isPreview?: boolean;
   IconComponent: React.ReactNode<any>;
-  onClick: (nodeId: string) => void;
+  onConfigIconClick: (nodeId: string) => void;
+  onDeleteIconClick: (nodeId: string) => void;
 };
 
 export type NodeDataAttributes = {

@@ -8,6 +8,7 @@ import {
   EdgeChange,
   Node,
   NodeChange,
+  NodeRemoveChange,
   OnConnect,
   OnEdgesChange,
   OnNodesChange,
@@ -20,6 +21,8 @@ import { getEndpoint, reqConfig } from "@/lib/http";
 export type addNodeType = (node: Node) => void;
 // eslint-disable-next-line no-unused-vars
 type setSelectedNodeType = (nodeId: string | null) => void;
+// eslint-disable-next-line no-unused-vars
+type deleteSelectedNodeType = (nodeId: string) => void;
 
 export type RFState = {
   nodes: Node[];
@@ -33,6 +36,7 @@ export type RFState = {
   onConnect: OnConnect;
   fetchContainers: () => void;
   setSelectedNode: setSelectedNodeType;
+  deleteSelectedNode: deleteSelectedNodeType;
 };
 
 const useStore = create<RFState>((set, get) => ({
@@ -74,6 +78,12 @@ const useStore = create<RFState>((set, get) => ({
     } else {
       set({ selectedNode: get().nodes.find((n) => n.id === nodeId) });
     }
+  },
+  deleteSelectedNode: (nodeId: string) => {
+    const removeChange: NodeRemoveChange = { id: nodeId, type: "remove" };
+    set({
+      nodes: applyNodeChanges([removeChange], get().nodes),
+    });
   },
 }));
 

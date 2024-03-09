@@ -22,15 +22,17 @@ function Builder() {
   };
 
   return (
-    <>
-      <TopToolbar height={toolbarHeight}>
-        <div>Opti law</div>
-        <UserButton afterSignOutUrl="" />
-      </TopToolbar>
+    <div className="flex flex-col w-full h-full">
+      <div className="flex-1 flex-row">
+        <TopToolbar height={toolbarHeight}>
+          <div>Opti.law</div>
+          <UserButton afterSignOutUrl="" />
+        </TopToolbar>
+      </div>
       <div>
         {/* Full-screen element */}
         <div
-          className={`w-full h-full absolute top-${toolbarHeight}`}
+          className={`w-full h-full absolute top-16`}
           ref={reactFlowWrapper}
           style={{ height: `calc(100% - ${4}rem)` }}
         >
@@ -46,21 +48,21 @@ function Builder() {
               className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
               onClick={toggleFloatingWindow}
             >
-              Close
+              Hide toolbar
             </button>
           </div>
         )}
         {/* Floating window toggle button */}
         {!isFloatingWindowOpen && (
           <button
-            className="fixed transform rotate-90 top-1/2 left-0 -translate-x-12 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+            className="fixed transform rotate-90 top-1/2 left-0 -translate-x-12 px-4 py-2 rounded bg-blue-500 hover:bg-blue-600 text-white"
             onClick={toggleFloatingWindow}
           >
             Open toolbar
           </button>
         )}
       </div>
-    </>
+    </div>
   );
 }
 

@@ -1,6 +1,5 @@
-import { Handle, NodeProps, Position } from "reactflow";
+import { Handle, NodeProps, NodeResizeControl, Position } from "reactflow";
 import { BaseNodeData } from "@/app/builder/types";
-import ThreeVerticalDotsIcon from "@/components/icons/ThreeVerticalDotsIcon";
 import { memo } from "react";
 import ClientsCustomersIcon from "@/components/icons/ClientsCustomersIcon";
 import MainCompanyIcon from "@/components/icons/MainCompanyIcon";
@@ -8,15 +7,17 @@ import ContractorsIcon from "@/components/icons/ContractorsIcon";
 import IndividualOwnerIcon from "@/components/icons/IndividualOwnerIcon";
 import SubsidiaryCompanyIcon from "@/components/icons/SubsidiaryCompanyIcon";
 import UnrelatedCompanyIcon from "@/components/icons/UnrelatedCompanyIcon";
+import { Settings, Trash2 } from "react-feather";
+import { COLORS } from "@/components/colors/colors";
+
+const controlStyle = {
+  background: "transparent",
+  border: "none",
+};
 
 function ContainerNode({ id, data }: NodeProps<BaseNodeData>) {
   return (
-    <div
-      className="px-6 py-4 rounded-md border bg-white border-stone-400 hover:bg-gray-100 cursor-pointer"
-      onClick={() => {
-        data.onClick(id);
-      }}
-    >
+    <div className="flex flex-col h-full px-6 py-8 rounded-md border bg-white border-stone-400 hover:bg-gray-100 cursor-pointer">
       <div className="flex flex-row w-full items-center justify-between">
         <div className="mr-4">
           <data.IconComponent />
@@ -31,12 +32,35 @@ function ContainerNode({ id, data }: NodeProps<BaseNodeData>) {
           />
           <h1>Node type</h1>
         </div>
-        <div className="flex flex-col justify-end">
-          <ThreeVerticalDotsIcon />
-        </div>
+        {!data.isPreview && (
+          <>
+            <div
+              className="flex flex-col ml-16 mr-6 justify-end"
+              onClick={() => data.onConfigIconClick(id)}
+            >
+              <div style={{ color: COLORS.GREY }} className="hover:bg-blue-50">
+                <Settings />
+              </div>
+            </div>
+            <div
+              className="flex flex-col mr-2 justify-end"
+              onClick={() => data.onDeleteIconClick(id)}
+            >
+              <div style={{ color: COLORS.GREY }}>
+                <Trash2 />
+              </div>
+            </div>
+          </>
+        )}
       </div>
       {!data.isPreview && (
         <>
+          <NodeResizeControl
+            style={controlStyle}
+            minWidth={100}
+            minHeight={70}
+          />
+          <Handle type="source" position={Position.Top} />
           <Handle type="target" position={Position.Bottom} />
         </>
       )}

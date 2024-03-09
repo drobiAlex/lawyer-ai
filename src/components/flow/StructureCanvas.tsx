@@ -13,6 +13,8 @@ import { shallow } from "zustand/shallow";
 import useStore, { RFState } from "@/common/store/store";
 import CustomEdge from "@/components/edges/CustomEdge";
 import { systemSupportedNodes } from "@/components/supported_nodes";
+import { DownloadButton } from "@/components/flow/DownloadButton";
+import { BaseNodeData } from "@/app/builder/types";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -23,7 +25,8 @@ const selector = (state: RFState) => ({
   addNode: state.addNode,
   onConnect: state.onConnect,
   fetchContainers: state.fetchContainers,
-  setSelectedNodeConfig: state.setSelectedNode,
+  setSelectedNode: state.setSelectedNode,
+  deleteSelectedNode: state.deleteSelectedNode,
 });
 const nodeOrigin: NodeOrigin = [0, 0];
 
@@ -36,7 +39,8 @@ function StructureCanvas() {
     addNode,
     onConnect,
     fetchContainers,
-    setSelectedNodeConfig,
+    setSelectedNode,
+    deleteSelectedNode,
   } = useStore(selector, shallow);
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance<"NodeData", "EdgeData">>();
@@ -80,7 +84,8 @@ function StructureCanvas() {
         position,
         data: {
           label: `${type} node`,
-          onClick: setSelectedNodeConfig,
+          onConfigIconClick: setSelectedNode,
+          onDeleteIconClick: deleteSelectedNode,
         },
       });
     },
@@ -90,8 +95,9 @@ function StructureCanvas() {
   function onClickFn() {
     fetchContainers();
   }
+
   function onPaneClick() {
-    setSelectedNodeConfig(null);
+    setSelectedNode(null);
   }
 
   return (
@@ -108,15 +114,14 @@ function StructureCanvas() {
       onDragOver={onDragOver}
       onDrop={onDrop}
       onPaneClick={onPaneClick}
+      deleteKeyCode={null}
       fitView
     >
-      <Background color="none" />
+      <Background color="#aaa" gap={32} />
       <Controls showInteractive={false} position="bottom-right" />
-      {/*<Panel position="top-left">*/}
-      {/*<div className="bg-background bg-red-50 rounded-md p-3">*/}
-      {/*  <button onClick={onClickFn}>Click me</button>*/}
-      {/*</div>*/}
-      {/*</Panel>*/}
+      <Panel position="top-right">
+        <DownloadButton />
+      </Panel>
     </ReactFlow>
   );
 }

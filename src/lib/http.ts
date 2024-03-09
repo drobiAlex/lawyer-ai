@@ -6,15 +6,16 @@ const jwt_cookie = () => {
   return Cookies.get("__session");
 };
 
-export function reqConfig(method: "GET" | "POST", url: string) {
+export function reqConfig() {
   return {
-    url: BASE_API_URL + url,
-    method: "get",
     headers: {
       "Content-Type": "application/json",
-    },
-    cookies: {
-      JWT: jwt_cookie(),
+      Authorization: `Bearer ${jwt_cookie()}`,
     },
   };
+}
+
+export function getEndpoint(endpoint: string): string {
+  const composedUrl = new URL(endpoint, BASE_API_URL);
+  return composedUrl.href;
 }

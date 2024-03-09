@@ -1,3 +1,5 @@
+import React from "react";
+
 export type NodeType =
   | "main_company"
   | "client_customer"
@@ -6,12 +8,14 @@ export type NodeType =
   | "subsidiary_company"
   | "unrelated_company";
 
-export type NodeData = {
+export type BaseNodeData = {
   label: string;
   residence: string | undefined;
-  // type: NodeType;
   attributes: [NodeDataAttributes] | undefined;
   isPreview?: boolean;
+  IconComponent: React.ReactNode<any>;
+  onConfigIconClick: (nodeId: string) => void;
+  onDeleteIconClick: (nodeId: string) => void;
 };
 
 export type NodeDataAttributes = {

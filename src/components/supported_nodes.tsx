@@ -1,9 +1,11 @@
-import MainCompanyNode from "@/components/nodes/MainCompanyNode";
-import IndividualOwnerNode from "@/components/nodes/IndividualOwnerNode";
-import ClientCustomerNode from "@/components/nodes/ClientCustomerNode";
-import ContractorsNode from "@/components/nodes/ContractorsNode";
-import SubsidiaryCompanyNode from "@/components/nodes/SubsidiaryCompanyNode";
-import UnrelatedCompanyNode from "@/components/nodes/UnrelatedCompanyNode";
+import {
+  ClientCustomerNode,
+  ContractorsNode,
+  IndividualOwnerNode,
+  MainCompanyNode,
+  SubsidiaryCompanyNode,
+  UnrelatedCompanyNode,
+} from "@/components/nodes/ContainerNodes";
 
 export const systemSupportedNodes = {
   main_company: MainCompanyNode,

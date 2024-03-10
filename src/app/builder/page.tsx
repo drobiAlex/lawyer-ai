@@ -10,15 +10,24 @@ import { ReactFlowProvider } from "reactflow";
 import { Sidebar } from "@/components/flow/Sidebar";
 import StructureCanvas from "@/components/flow/StructureCanvas";
 import TopToolbar from "@/components/toolbars/TopToolbar";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 const toolbarHeight = 16;
 
 function Builder() {
-  const [isFloatingWindowOpen, setIsFloatingWindowOpen] = useState(true);
+  const [isToolbarWindowOpen, setIsToolbarWindowOpen] = useState(true);
   const reactFlowWrapper = useRef(null);
 
-  const toggleFloatingWindow = () => {
-    setIsFloatingWindowOpen((prevState) => !prevState);
+  const toggleToolbarWindowOpen = () => {
+    setIsToolbarWindowOpen((prevState) => !prevState);
   };
 
   return (
@@ -41,22 +50,22 @@ function Builder() {
           </ReactFlowProvider>
         </div>
         {/* Floating window element */}
-        {isFloatingWindowOpen && (
-          <div className="fixed left-0 top-1/4 -translate-y-16 bg-white p-4 rounded-xl shadow-xl">
+        {isToolbarWindowOpen && (
+          <div className="fixed left-0 top-1/4 -translate-y-16 bg-white overflow-scroll p-4 rounded-xl shadow-xl">
             <Sidebar />
             <button
               className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-              onClick={toggleFloatingWindow}
+              onClick={toggleToolbarWindowOpen}
             >
               Hide toolbar
             </button>
           </div>
         )}
         {/* Floating window toggle button */}
-        {!isFloatingWindowOpen && (
+        {!isToolbarWindowOpen && (
           <button
             className="fixed transform rotate-90 top-1/2 left-0 -translate-x-12 px-4 py-2 rounded bg-blue-500 hover:bg-blue-600 text-white"
-            onClick={toggleFloatingWindow}
+            onClick={toggleToolbarWindowOpen}
           >
             Open toolbar
           </button>

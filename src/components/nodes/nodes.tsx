@@ -1,14 +1,14 @@
-import {Handle, NodeProps, NodeResizeControl, Position} from "reactflow";
-import {BaseNodeData} from "@/app/builder/types";
-import React, {memo} from "react";
+import { Handle, NodeProps, NodeResizeControl, Position } from "reactflow";
+import { BaseNodeData } from "@/app/builder/types";
+import React, { memo } from "react";
 import ClientsCustomersIcon from "@/components/icons/ClientsCustomersIcon";
 import MainCompanyIcon from "@/components/icons/MainCompanyIcon";
 import ContractorsIcon from "@/components/icons/ContractorsIcon";
 import IndividualOwnerIcon from "@/components/icons/IndividualOwnerIcon";
 import SubsidiaryCompanyIcon from "@/components/icons/SubsidiaryCompanyIcon";
 import UnrelatedCompanyIcon from "@/components/icons/UnrelatedCompanyIcon";
-import {Settings, Trash2} from "react-feather";
-import {COLORS} from "@/components/colors/colors";
+import { Settings, Trash2 } from "react-feather";
+import { COLORS } from "@/components/colors/colors";
 import {
   Sheet,
   SheetClose,
@@ -19,16 +19,16 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {Button} from "@/components/ui/button";
-import {Separator} from "@radix-ui/react-select";
-import {InputForm} from "@/components/node-form/forms";
+import { Button } from "@/components/ui/button";
+import { InputForm } from "@/components/node-form/forms";
+import { Separator } from "@/components/ui/separator";
 
 const controlStyle = {
   background: "transparent",
   border: "none",
 };
 
-function ContainerNode({id, data}: NodeProps<BaseNodeData>) {
+function ContainerNode({ id, data }: NodeProps<BaseNodeData>) {
   return (
     <Sheet>
       <SheetContent>
@@ -40,10 +40,11 @@ function ContainerNode({id, data}: NodeProps<BaseNodeData>) {
                 Configure parameters for the node. Once ready, click Save.
               </SheetDescription>
             </SheetHeader>
-            <InputForm/>
+            <div className="py-6">
+              <InputForm />
+            </div>
           </div>
           <SheetFooter>
-            <Separator/>
             <SheetClose asChild>
               <Button variant="outline" type="reset">
                 Close
@@ -60,7 +61,7 @@ function ContainerNode({id, data}: NodeProps<BaseNodeData>) {
       <div className="flex flex-col h-full px-6 py-8 rounded-md border bg-white border-stone-400 cursor-pointer">
         <div className="flex flex-row w-full items-center justify-between">
           <div className="mr-4">
-            <data.IconComponent/>
+            <data.IconComponent />
           </div>
           <div className="flex-1 flex-col">
             <input
@@ -76,8 +77,8 @@ function ContainerNode({id, data}: NodeProps<BaseNodeData>) {
             <>
               <div className="flex flex-col ml-16 mr-4 nodrag justify-end hover:bg-gray-100 hover:rounded-md">
                 <SheetTrigger onClick={() => data.onConfigIconClick(id)}>
-                  <div style={{color: COLORS.GREY}} className="p-2">
-                    <Settings/>
+                  <div style={{ color: COLORS.GREY }} className="p-2">
+                    <Settings />
                   </div>
                 </SheetTrigger>
               </div>
@@ -85,8 +86,8 @@ function ContainerNode({id, data}: NodeProps<BaseNodeData>) {
                 className="flex flex-col mr-2 nodrag justify-end hover:bg-red-200 hover:rounded-md"
                 onClick={() => data.onDeleteIconClick(id)}
               >
-                <div style={{color: COLORS.GREY}} className="p-2">
-                  <Trash2/>
+                <div style={{ color: COLORS.GREY }} className="p-2">
+                  <Trash2 />
                 </div>
               </div>
             </>
@@ -99,8 +100,8 @@ function ContainerNode({id, data}: NodeProps<BaseNodeData>) {
               minWidth={100}
               minHeight={70}
             />
-            <Handle type="source" position={Position.Top}/>
-            <Handle type="target" position={Position.Bottom}/>
+            <Handle type="source" position={Position.Top} />
+            <Handle type="target" position={Position.Bottom} />
           </>
         )}
       </div>

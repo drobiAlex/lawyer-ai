@@ -10,15 +10,6 @@ import { ReactFlowProvider } from "reactflow";
 import { Sidebar } from "@/components/flow/Sidebar";
 import StructureCanvas from "@/components/flow/StructureCanvas";
 import TopToolbar from "@/components/toolbars/TopToolbar";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
 
 const toolbarHeight = 16;
 
@@ -34,7 +25,7 @@ function Builder() {
     <div className="flex flex-col w-full h-full">
       <div className="flex-1 flex-row">
         <TopToolbar height={toolbarHeight}>
-          <div>Opti.law</div>
+          <div>Lawframe</div>
           <UserButton afterSignOutUrl="" />
         </TopToolbar>
       </div>
@@ -50,7 +41,7 @@ function Builder() {
           </ReactFlowProvider>
         </div>
         {/* Floating window element */}
-        {isToolbarWindowOpen && (
+        {isToolbarWindowOpen ? (
           <div className="fixed left-0 top-1/4 -translate-y-16 bg-white overflow-scroll p-4 rounded-xl shadow-xl">
             <Sidebar />
             <button
@@ -60,9 +51,7 @@ function Builder() {
               Hide toolbar
             </button>
           </div>
-        )}
-        {/* Floating window toggle button */}
-        {!isToolbarWindowOpen && (
+        ) : (
           <button
             className="fixed transform rotate-90 top-1/2 left-0 -translate-x-12 px-4 py-2 rounded bg-blue-500 hover:bg-blue-600 text-white"
             onClick={toggleToolbarWindowOpen}

@@ -44,8 +44,8 @@ function Onboarding() {
 
     // Sleep for 300 ms (delay)
     await new Promise((resolve) => setTimeout(resolve, 300));
-    setLoading(false);
     await navigateToBuilder();
+    setLoading(false);
   }
 
   return (

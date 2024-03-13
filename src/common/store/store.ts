@@ -13,23 +13,34 @@ import {
   OnEdgesChange,
   OnNodesChange,
 } from "reactflow";
+import { mountStoreDevtool } from "simple-zustand-devtools";
 import { create } from "zustand";
 
+import { BaseNodeData } from "@/app/builder/types";
+import { CompanyOrgForm, CompanyOrgFormType } from "@/common/store/api";
 import { getEndpoint, reqConfig } from "@/lib/http";
 
 // eslint-disable-next-line no-unused-vars
-export type addNodeType = (node: Node) => void;
+export type addNodeType = (node: LawframeNodeType) => void;
 // eslint-disable-next-line no-unused-vars
 type setSelectedNodeType = (nodeId: string | null) => void;
 // eslint-disable-next-line no-unused-vars
 type deleteSelectedNodeType = (nodeId: string) => void;
+type LawframeNodeType = Node & {
+  data: BaseNodeData;
+};
 
-export type RFState = {
-  nodes: Node[];
+export type StoreState = {
+  nodes: LawframeNodeType[];
   edges: Edge[];
   selectedNode: Node | null;
   nodeTypes: any;
   edgeTypes: any;
+  companyOrgForms: CompanyOrgForm[];
+  companyOrgFormsTypes: CompanyOrgFormType[];
+};
+
+export type Actions = {
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   addNode: addNodeType;
@@ -37,14 +48,20 @@ export type RFState = {
   fetchContainers: () => void;
   setSelectedNode: setSelectedNodeType;
   deleteSelectedNode: deleteSelectedNodeType;
+  editSelectedNode: (label: string) => void;
 };
 
-const useStore = create<RFState>((set, get) => ({
+// merge state and actions
+export type StoreStateActions = StoreState & Actions;
+
+const useStore = create<StoreState & Actions>((set, get) => ({
   nodes: [],
   edges: [],
   nodeTypes: {},
   edgeTypes: {},
   selectedNode: null,
+  companyOrgForms: [],
+  companyOrgFormsTypes: [],
   onNodesChange: (nodeChanges: NodeChange[]) => {
     set({
       nodes: applyNodeChanges(nodeChanges, get().nodes),
@@ -67,7 +84,34 @@ const useStore = create<RFState>((set, get) => ({
   },
 
   fetchContainers: async () => {
-    const response = await axios.get(getEndpoint("jurisdictions"), reqConfig());
+    const typesReq = axios.get(
+      getEndpoint("jurisdictions/company-org-forms-types/"),
+      reqConfig(),
+    );
+    const companyOrgFormsReq = axios.get(
+      getEndpoint("jurisdictions/company-org-forms/"),
+      reqConfig(),
+    );
+    Promise.all([typesReq, companyOrgFormsReq])
+      .then((response) => {
+        const companyOrgFormsTypes: CompanyOrgFormType[] | null =
+          response[0].data;
+        const companyOrgForms: CompanyOrgForm[] | null = response[1].data;
+
+        if (companyOrgFormsTypes) {
+          set({
+            companyOrgFormsTypes: companyOrgFormsTypes,
+          });
+        }
+        if (companyOrgForms) {
+          set({
+            companyOrgForms: companyOrgForms,
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   },
   setSelectedNode: (nodeId) => {
     if (!nodeId) {
@@ -85,6 +129,26 @@ const useStore = create<RFState>((set, get) => ({
       nodes: applyNodeChanges([removeChange], get().nodes),
     });
   },
+  editSelectedNode: (label: string) => {
+    const updatedNodes = get().nodes.map((node) => {
+      if (node.id !== get().selectedNode?.id) return node;
+      return {
+        ...node,
+        data: {
+          ...node.data,
+          label: label,
+          isPreview: false,
+        },
+      };
+    });
+    set({
+      nodes: updatedNodes,
+    });
+  },
 }));
+
+if (process.env.NODE_ENV === "development") {
+  mountStoreDevtool("Store", useStore);
+}
 
 export default useStore;

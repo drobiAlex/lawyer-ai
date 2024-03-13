@@ -1,6 +1,6 @@
 import { Handle, NodeProps, NodeResizeControl, Position } from "reactflow";
 import { BaseNodeData } from "@/app/builder/types";
-import React, { memo } from "react";
+import React, { memo, useMemo } from "react";
 import ClientsCustomersIcon from "@/components/icons/ClientsCustomersIcon";
 import MainCompanyIcon from "@/components/icons/MainCompanyIcon";
 import ContractorsIcon from "@/components/icons/ContractorsIcon";
@@ -22,15 +22,27 @@ import {
 import { Button } from "@/components/ui/button";
 import { InputForm } from "@/components/node-form/forms";
 import { Separator } from "@/components/ui/separator";
+import { BaseNodeForm } from "@/components/node-form/base-form";
 
 const controlStyle = {
   background: "transparent",
   border: "none",
 };
 
-function ContainerNode({ id, data }: NodeProps<BaseNodeData>) {
+function ContainerNode({ id, type, data }: NodeProps<BaseNodeData>) {
+  const typeName = useMemo(() => {
+    const capitalizedTypeName = type.charAt(0).toUpperCase() + type.slice(1);
+    return capitalizedTypeName.split("_").join(" ");
+  }, []);
+
   return (
-    <Sheet>
+    <Sheet
+      onOpenChange={(open) => {
+        if (!open) {
+          data.onConfigIconClick(null);
+        }
+      }}
+    >
       <SheetContent>
         <div className="flex flex-col h-full justify-between">
           <div>
@@ -41,7 +53,7 @@ function ContainerNode({ id, data }: NodeProps<BaseNodeData>) {
               </SheetDescription>
             </SheetHeader>
             <div className="py-6">
-              <InputForm />
+              <BaseNodeForm />
             </div>
           </div>
           <SheetFooter>
@@ -64,14 +76,10 @@ function ContainerNode({ id, data }: NodeProps<BaseNodeData>) {
             <data.IconComponent />
           </div>
           <div className="flex-1 flex-col">
-            <input
-              className={
-                "w-full nodrag border-solid border-indigo-600 bg-transparent focus:outline-none focus:rounded-md focus:border-2"
-              }
-              defaultValue={data.label}
-              disabled={data.isPreview}
-            />
-            <h1>Node type</h1>
+            <div className="flex-wrap-reverse">
+              <h6 className="text-lg">{data.label}</h6>
+            </div>
+            <h6 className="text-sm">{typeName}</h6>
           </div>
           {!data.isPreview && (
             <>

@@ -39,8 +39,7 @@ export function Sidebar() {
         ([nodeType, NodeClass], index) => {
           const data = {
             ...nodeProps.data,
-            type: nodeType,
-            label: nodeType,
+            label: "Node name",
           };
           const props = {
             ...nodeProps,

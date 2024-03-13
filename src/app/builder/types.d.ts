@@ -10,11 +10,11 @@ export type NodeType =
 
 export type BaseNodeData = {
   label: string;
-  residence: string | undefined;
-  attributes: [NodeDataAttributes] | undefined;
+  residence?: string | null;
+  attributes?: [NodeDataAttributes] | null;
   isPreview?: boolean;
-  IconComponent: React.ReactNode<any>;
-  onConfigIconClick: (nodeId: string) => void;
+  IconComponent: React.ReactNode<any> | null;
+  onConfigIconClick: (nodeId: string | null) => void;
   onDeleteIconClick: (nodeId: string) => void;
 };
 

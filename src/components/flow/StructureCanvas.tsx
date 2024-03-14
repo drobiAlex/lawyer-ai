@@ -16,7 +16,6 @@ import { systemSupportedNodes } from "@/components/supported_nodes";
 import { DownloadButton } from "@/components/flow/DownloadButton";
 import { BaseNodeData } from "@/app/builder/types";
 import { undefined } from "zod";
-import { type } from "node:os";
 import { randomName } from "@/lib/utils";
 
 const selector = (state: StoreStateActions) => ({

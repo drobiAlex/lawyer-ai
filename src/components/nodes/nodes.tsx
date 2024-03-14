@@ -20,14 +20,98 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { InputForm } from "@/components/node-form/forms";
-import { Separator } from "@/components/ui/separator";
 import { BaseNodeForm } from "@/components/node-form/base-form";
 
 const controlStyle = {
   background: "transparent",
   border: "none",
 };
+
+function NodeSheetHeader() {
+  return (
+    <SheetHeader>
+      <SheetTitle>Edit node</SheetTitle>
+      <SheetDescription>
+        Configure parameters for the node. Once ready, click Save.
+      </SheetDescription>
+    </SheetHeader>
+  );
+}
+
+function NodeSheetForm() {
+  return (
+    <div className="py-6">
+      <BaseNodeForm />
+    </div>
+  );
+}
+
+function NodeSheetFooter() {
+  return (
+    <SheetFooter>
+      <SheetClose asChild>
+        <Button variant="outline" type="reset">
+          Close
+        </Button>
+      </SheetClose>
+      <SheetClose asChild>
+        <Button disabled={true} type="submit">
+          Save changes
+        </Button>
+      </SheetClose>
+    </SheetFooter>
+  );
+}
+
+function NodeDetails({
+  data,
+  typeName,
+}: {
+  data: BaseNodeData;
+  typeName: string;
+}) {
+  return (
+    <div className="flex flex-row w-full items-center justify-between">
+      <div className="mr-4">
+        <data.IconComponent />
+      </div>
+      <div className="flex-1 flex-col">
+        <div className="flex-wrap-reverse">
+          <h6 className="text-lg">{data.label}</h6>
+        </div>
+        <h6 className="text-sm">{typeName}</h6>
+      </div>
+    </div>
+  );
+}
+
+function ActionButtons({ data, id }: { data: BaseNodeData; id: string }) {
+  return (
+    <>
+      <div className="flex flex-row ml-16 mr-4 nodrag items-center justify-end">
+        <SheetTrigger onClick={() => data.onConfigIconClick(id)}>
+          <div
+            style={{ color: COLORS.GREY }}
+            className="p-2 hover:bg-gray-200 hover:rounded-md"
+          >
+            <Settings className="m-2" />
+          </div>
+        </SheetTrigger>
+      </div>
+      <div
+        className="flex flex-row mr-2 nodrag items-center justify-end"
+        onClick={() => data.onDeleteIconClick(id)}
+      >
+        <div
+          style={{ color: COLORS.GREY }}
+          className="p-2 hover:bg-red-200 hover:rounded-md"
+        >
+          <Trash2 className="m-2" />
+        </div>
+      </div>
+    </>
+  );
+}
 
 function ContainerNode({ id, type, data }: NodeProps<BaseNodeData>) {
   const typeName = useMemo(() => {
@@ -46,67 +130,21 @@ function ContainerNode({ id, type, data }: NodeProps<BaseNodeData>) {
       <SheetContent>
         <div className="flex flex-col h-full justify-between">
           <div>
-            <SheetHeader>
-              <SheetTitle>Edit node</SheetTitle>
-              <SheetDescription>
-                Configure parameters for the node. Once ready, click Save.
-              </SheetDescription>
-            </SheetHeader>
-            <div className="py-6">
-              <BaseNodeForm />
-            </div>
+            <NodeSheetHeader />
+            <NodeSheetForm />
           </div>
-          <SheetFooter>
-            <SheetClose asChild>
-              <Button variant="outline" type="reset">
-                Close
-              </Button>
-            </SheetClose>
-            <SheetClose asChild>
-              <Button disabled={true} type="submit">
-                Save changes
-              </Button>
-            </SheetClose>
-          </SheetFooter>
+          <NodeSheetFooter />
         </div>
       </SheetContent>
-      <div className="flex flex-col h-full px-6 py-8 rounded-md border bg-white border-stone-400 cursor-pointer">
-        <div className="flex flex-row w-full items-center justify-between">
-          <div className="mr-4">
-            <data.IconComponent />
-          </div>
-          <div className="flex-1 flex-col">
-            <div className="flex-wrap-reverse">
-              <h6 className="text-lg">{data.label}</h6>
-            </div>
-            <h6 className="text-sm">{typeName}</h6>
-          </div>
-          {!data.isPreview && (
-            <>
-              <div className="flex flex-col ml-16 mr-4 nodrag justify-end hover:bg-gray-100 hover:rounded-md">
-                <SheetTrigger onClick={() => data.onConfigIconClick(id)}>
-                  <div style={{ color: COLORS.GREY }} className="p-2">
-                    <Settings />
-                  </div>
-                </SheetTrigger>
-              </div>
-              <div
-                className="flex flex-col mr-2 nodrag justify-end hover:bg-red-200 hover:rounded-md"
-                onClick={() => data.onDeleteIconClick(id)}
-              >
-                <div style={{ color: COLORS.GREY }} className="p-2">
-                  <Trash2 />
-                </div>
-              </div>
-            </>
-          )}
-        </div>
+      <div className="flex flex-row h-full px-6 py-8 rounded-md border bg-white border-stone-400 cursor-pointer">
+        <NodeDetails data={data} typeName={typeName} />
         {!data.isPreview && (
           <>
+            <ActionButtons data={data} id={id} />
             <NodeResizeControl
               style={controlStyle}
-              minWidth={100}
-              minHeight={70}
+              minWidth={400}
+              minHeight={100}
             />
             <Handle type="source" position={Position.Top} />
             <Handle type="target" position={Position.Bottom} />
@@ -123,6 +161,7 @@ const ClientCustomerNode = memo((props: NodeProps<BaseNodeData>) => {
 });
 
 const MainCompanyNode = memo((props: NodeProps<BaseNodeData>) => {
+  console.log("MainCompanyNode " + props.data.label);
   props.data.IconComponent = MainCompanyIcon;
   return <ContainerNode {...props} />;
 });

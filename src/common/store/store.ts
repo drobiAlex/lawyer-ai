@@ -48,7 +48,7 @@ export type Actions = {
   fetchContainers: () => void;
   setSelectedNode: setSelectedNodeType;
   deleteSelectedNode: deleteSelectedNodeType;
-  editSelectedNode: (label: string) => void;
+  editSelectedNode: (label: string, type: string) => void;
 };
 
 // merge state and actions
@@ -129,16 +129,16 @@ const useStore = create<StoreState & Actions>((set, get) => ({
       nodes: applyNodeChanges([removeChange], get().nodes),
     });
   },
-  editSelectedNode: (label: string) => {
+  editSelectedNode: (label: string, type: string) => {
     const updatedNodes = get().nodes.map((node) => {
       if (node.id !== get().selectedNode?.id) return node;
+      const updatedNodeData: BaseNodeData = {
+        ...node.data,
+        label: label,
+      };
       return {
         ...node,
-        data: {
-          ...node.data,
-          label: label,
-          isPreview: false,
-        },
+        data: updatedNodeData,
       };
     });
     set({

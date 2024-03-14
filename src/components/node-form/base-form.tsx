@@ -57,7 +57,7 @@ export function BaseNodeForm() {
   function onSubmit(data: z.infer<typeof formSchema>) {
     if (selectedNode) {
       console.log("Editing node");
-      editSelectedNode(data.nodeNamed);
+      editSelectedNode(data.nodeNamed, "");
     }
   }
 

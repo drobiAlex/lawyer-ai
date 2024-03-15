@@ -26,7 +26,7 @@ const selector = (state: StoreStateActions) => ({
   onEdgesChange: state.onEdgesChange,
   addNode: state.addNode,
   onConnect: state.onConnect,
-  fetchContainers: state.fetchContainers,
+  fetchContainersConfiguration: state.fetchContainersConfiguration,
   setSelectedNode: state.setSelectedNode,
   deleteSelectedNode: state.deleteSelectedNode,
 });
@@ -40,15 +40,15 @@ function StructureCanvas() {
     onEdgesChange,
     addNode,
     onConnect,
-    fetchContainers,
     setSelectedNode,
     deleteSelectedNode,
+    fetchContainersConfiguration,
   } = useStore(selector, shallow);
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance<"NodeData", "EdgeData">>();
 
   useEffect(() => {
-    fetchContainers();
+    fetchContainersConfiguration();
   }, []);
   const nodeTypes = useMemo(() => systemSupportedNodes, []);
 

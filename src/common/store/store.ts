@@ -16,9 +16,12 @@ import {
 import { mountStoreDevtool } from "simple-zustand-devtools";
 import { create } from "zustand";
 
+import type { ICountry } from "countries-list";
+import { countries } from "countries-list";
+
 import { BaseNodeData } from "@/app/builder/types";
 import { CompanyOrgForm, CompanyOrgFormType } from "@/common/store/api";
-import { getEndpoint, reqConfig } from "@/lib/http";
+import { apiRequestConfig, getEndpoint } from "@/lib/http";
 
 // eslint-disable-next-line no-unused-vars
 export type addNodeType = (node: LawframeNodeType) => void;
@@ -36,6 +39,8 @@ export type StoreState = {
   selectedNode: Node | null;
   nodeTypes: any;
   edgeTypes: any;
+  countries: ICountry[];
+  supportedCountries: string[];
   companyOrgForms: CompanyOrgForm[];
   companyOrgFormsTypes: CompanyOrgFormType[];
 };
@@ -45,7 +50,7 @@ export type Actions = {
   onEdgesChange: OnEdgesChange;
   addNode: addNodeType;
   onConnect: OnConnect;
-  fetchContainers: () => void;
+  fetchContainersConfiguration: () => void;
   setSelectedNode: setSelectedNodeType;
   deleteSelectedNode: deleteSelectedNodeType;
   editSelectedNode: (label: string, type: string) => void;
@@ -59,6 +64,8 @@ const useStore = create<StoreState & Actions>((set, get) => ({
   edges: [],
   nodeTypes: {},
   edgeTypes: {},
+  countries: [],
+  supportedCountries: [],
   selectedNode: null,
   companyOrgForms: [],
   companyOrgFormsTypes: [],
@@ -83,21 +90,27 @@ const useStore = create<StoreState & Actions>((set, get) => ({
     });
   },
 
-  fetchContainers: async () => {
+  fetchContainersConfiguration: async () => {
     const typesReq = axios.get(
       getEndpoint("jurisdictions/company-org-forms-types/"),
-      reqConfig(),
+      apiRequestConfig(),
     );
     const companyOrgFormsReq = axios.get(
       getEndpoint("jurisdictions/company-org-forms/"),
-      reqConfig(),
+      apiRequestConfig(),
     );
-    Promise.all([typesReq, companyOrgFormsReq])
+    const supportedCountriesReq = axios.get(
+      getEndpoint("jurisdictions/company-org-forms/"),
+      apiRequestConfig(),
+    );
+
+    Promise.all([typesReq, companyOrgFormsReq, supportedCountriesReq])
       .then((response) => {
         const companyOrgFormsTypes: CompanyOrgFormType[] | null =
           response[0].data;
         const companyOrgForms: CompanyOrgForm[] | null = response[1].data;
-
+        const supportedCountries: string[] | null = response[2].data;
+        const countriesList: ICountry[] = Object.values(countries);
         if (companyOrgFormsTypes) {
           set({
             companyOrgFormsTypes: companyOrgFormsTypes,
@@ -108,6 +121,14 @@ const useStore = create<StoreState & Actions>((set, get) => ({
             companyOrgForms: companyOrgForms,
           });
         }
+        if (supportedCountries) {
+          set({
+            supportedCountries: supportedCountries,
+          });
+        }
+        set({
+          countries: countriesList,
+        });
       })
       .catch((error) => {
         console.log(error);

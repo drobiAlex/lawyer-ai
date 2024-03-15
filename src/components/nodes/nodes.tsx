@@ -20,7 +20,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { BaseNodeForm } from "@/components/node-form/base-form";
+import { BaseNodeForm } from "@/components/node-form/forms";
 
 const controlStyle = {
   background: "transparent",
@@ -161,7 +161,6 @@ const ClientCustomerNode = memo((props: NodeProps<BaseNodeData>) => {
 });
 
 const MainCompanyNode = memo((props: NodeProps<BaseNodeData>) => {
-  console.log("MainCompanyNode " + props.data.label);
   props.data.IconComponent = MainCompanyIcon;
   return <ContainerNode {...props} />;
 });

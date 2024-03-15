@@ -6,7 +6,7 @@ const jwt_cookie = () => {
   return Cookies.get("__session");
 };
 
-export function reqConfig() {
+export function apiRequestConfig() {
   return {
     headers: {
       "Content-Type": "application/json",

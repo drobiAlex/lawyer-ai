@@ -10,7 +10,10 @@
     "format:all": "prettier --write ."
   },
   "lint-staged": {
-    "**/*": "prettier --write --ignore-unknown --allow-empty"
+    "**/*.{ts,tsx}": [
+      "prettier --write .",
+      "eslint --fix ."
+    ]
   },
   "dependencies": {
     "@clerk/nextjs": "^4.29.7",

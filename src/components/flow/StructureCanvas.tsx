@@ -14,7 +14,7 @@ import useStore, { StoreStateActions } from "@/common/store/store";
 import CustomEdge from "@/components/edges/CustomEdge";
 import { systemSupportedNodes } from "@/components/supported_nodes";
 import { DownloadButton } from "@/components/flow/DownloadButton";
-import { BaseNodeData } from "@/app/builder/types";
+import { TBaseNodeData } from "@/components/nodes/types";
 import { undefined } from "zod";
 import { randomName } from "@/lib/utils";
 
@@ -84,11 +84,13 @@ function StructureCanvas() {
       });
 
       const nodeLabel = randomName();
-      const baseNodeData: BaseNodeData = {
+      const baseNodeData: TBaseNodeData = {
         label: `${nodeLabel.charAt(0).toUpperCase()}${nodeLabel.slice(1)}`,
         onConfigIconClick: setSelectedNode,
         onDeleteIconClick: deleteSelectedNode,
         IconComponent: undefined,
+        nodeConfiguration: null,
+        nodeTemporaryConfiguration: null,
       };
 
       addNode({

@@ -5,6 +5,8 @@ import * as React from "react";
 import { uniqueId } from "@/lib/utils";
 import { systemSupportedNodes } from "@/components/supported_nodes";
 import { precisionPrefix } from "d3-format";
+import { TBaseNodeData } from "@/components/nodes/types";
+import { undefined } from "zod";
 
 export function Sidebar() {
   const onDragStart = (event: React.DragEvent, nodeType: string) => {
@@ -12,19 +14,20 @@ export function Sidebar() {
     event.dataTransfer.effectAllowed = "move";
   };
 
+  const nodeData: TBaseNodeData = {
+    label: "1",
+    residence: "USA",
+    isPreview: true,
+    IconComponent: <div />,
+    onConfigIconClick: () => {},
+    onDeleteIconClick: () => {},
+    nodeConfiguration: null,
+    nodeTemporaryConfiguration: null,
+  };
   const nodeProps = {
     id: uniqueId(),
     type: "",
-    data: {
-      label: "1",
-      residence: "USA",
-      attributes: undefined,
-      type: "",
-      isPreview: true,
-      IconComponent: <div />,
-      onConfigIconClick: () => {},
-      onDeleteIconClick: () => {},
-    },
+    data: nodeData,
     selected: false,
     isConnectable: false,
     dragging: false,

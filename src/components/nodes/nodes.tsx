@@ -1,5 +1,5 @@
 import { Handle, NodeProps, NodeResizeControl, Position } from "reactflow";
-import { BaseNodeData } from "@/app/builder/types";
+import { TBaseNodeData } from "@/components/nodes/types";
 import React, { memo, useMemo } from "react";
 import ClientsCustomersIcon from "@/components/icons/ClientsCustomersIcon";
 import MainCompanyIcon from "@/components/icons/MainCompanyIcon";
@@ -40,7 +40,7 @@ function NodeSheetHeader() {
 
 function NodeSheetForm() {
   return (
-    <div className="py-6">
+    <div className="py-6 pl-1">
       <BaseNodeForm />
     </div>
   );
@@ -67,7 +67,7 @@ function NodeDetails({
   data,
   typeName,
 }: {
-  data: BaseNodeData;
+  data: TBaseNodeData;
   typeName: string;
 }) {
   return (
@@ -85,7 +85,7 @@ function NodeDetails({
   );
 }
 
-function ActionButtons({ data, id }: { data: BaseNodeData; id: string }) {
+function ActionButtons({ data, id }: { data: TBaseNodeData; id: string }) {
   return (
     <>
       <div className="flex flex-row ml-16 mr-4 nodrag items-center justify-end">
@@ -113,7 +113,7 @@ function ActionButtons({ data, id }: { data: BaseNodeData; id: string }) {
   );
 }
 
-function ContainerNode({ id, type, data }: NodeProps<BaseNodeData>) {
+function ContainerNode({ id, type, data }: NodeProps<TBaseNodeData>) {
   const typeName = useMemo(() => {
     const capitalizedTypeName = type.charAt(0).toUpperCase() + type.slice(1);
     return capitalizedTypeName.split("_").join(" ");
@@ -127,8 +127,8 @@ function ContainerNode({ id, type, data }: NodeProps<BaseNodeData>) {
         }
       }}
     >
-      <SheetContent>
-        <div className="flex flex-col h-full justify-between">
+      <SheetContent className="sm:max-w-none sm:max-w-xl">
+        <div className="flex flex-col h-full justify-between overflow-scroll">
           <div>
             <NodeSheetHeader />
             <NodeSheetForm />
@@ -155,32 +155,32 @@ function ContainerNode({ id, type, data }: NodeProps<BaseNodeData>) {
   );
 }
 
-const ClientCustomerNode = memo((props: NodeProps<BaseNodeData>) => {
+const ClientCustomerNode = memo((props: NodeProps<TBaseNodeData>) => {
   props.data.IconComponent = ClientsCustomersIcon;
   return <ContainerNode {...props} />;
 });
 
-const MainCompanyNode = memo((props: NodeProps<BaseNodeData>) => {
+const MainCompanyNode = memo((props: NodeProps<TBaseNodeData>) => {
   props.data.IconComponent = MainCompanyIcon;
   return <ContainerNode {...props} />;
 });
 
-const IndividualOwnerNode = memo((props: NodeProps<BaseNodeData>) => {
+const IndividualOwnerNode = memo((props: NodeProps<TBaseNodeData>) => {
   props.data.IconComponent = IndividualOwnerIcon;
   return <ContainerNode {...props} />;
 });
 
-const ContractorsNode = memo((props: NodeProps<BaseNodeData>) => {
+const ContractorsNode = memo((props: NodeProps<TBaseNodeData>) => {
   props.data.IconComponent = ContractorsIcon;
   return <ContainerNode {...props} />;
 });
 
-const SubsidiaryCompanyNode = memo((props: NodeProps<BaseNodeData>) => {
+const SubsidiaryCompanyNode = memo((props: NodeProps<TBaseNodeData>) => {
   props.data.IconComponent = SubsidiaryCompanyIcon;
   return <ContainerNode {...props} />;
 });
 
-const UnrelatedCompanyNode = memo((props: NodeProps<BaseNodeData>) => {
+const UnrelatedCompanyNode = memo((props: NodeProps<TBaseNodeData>) => {
   props.data.IconComponent = UnrelatedCompanyIcon;
   return <ContainerNode {...props} />;
 });

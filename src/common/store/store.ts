@@ -1,4 +1,6 @@
 import axios from "axios";
+import type { ICountry } from "countries-list";
+import { countries } from "countries-list";
 import {
   addEdge,
   applyEdgeChanges,
@@ -16,11 +18,8 @@ import {
 import { mountStoreDevtool } from "simple-zustand-devtools";
 import { create } from "zustand";
 
-import type { ICountry } from "countries-list";
-import { countries } from "countries-list";
-
-import { BaseNodeData } from "@/app/builder/types";
 import { CompanyOrgForm, CompanyOrgFormType } from "@/common/store/api";
+import { TBaseNodeData, TNodeConfiguration } from "@/components/nodes/types";
 import { apiRequestConfig, getEndpoint } from "@/lib/http";
 
 // eslint-disable-next-line no-unused-vars
@@ -30,7 +29,7 @@ type setSelectedNodeType = (nodeId: string | null) => void;
 // eslint-disable-next-line no-unused-vars
 type deleteSelectedNodeType = (nodeId: string) => void;
 type LawframeNodeType = Node & {
-  data: BaseNodeData;
+  data: TBaseNodeData;
 };
 
 export type StoreState = {
@@ -54,6 +53,11 @@ export type Actions = {
   setSelectedNode: setSelectedNodeType;
   deleteSelectedNode: deleteSelectedNodeType;
   editSelectedNode: (label: string, type: string) => void;
+  updateNodeConfiguration: (
+    nodeId: string,
+    configuration: TNodeConfiguration,
+    temporaryConfiguration: boolean,
+  ) => void;
 };
 
 // merge state and actions
@@ -153,10 +157,39 @@ const useStore = create<StoreState & Actions>((set, get) => ({
   editSelectedNode: (label: string, type: string) => {
     const updatedNodes = get().nodes.map((node) => {
       if (node.id !== get().selectedNode?.id) return node;
-      const updatedNodeData: BaseNodeData = {
+      const updatedNodeData: TBaseNodeData = {
         ...node.data,
         label: label,
       };
+      return {
+        ...node,
+        data: updatedNodeData,
+      };
+    });
+    set({
+      nodes: updatedNodes,
+    });
+  },
+  updateNodeConfiguration: (
+    nodeId: string,
+    configuration: TNodeConfiguration,
+    temporaryConfiguration: boolean,
+  ) => {
+    const updatedNodes = get().nodes.map((node) => {
+      if (node.id !== nodeId) return node;
+      let updatedNodeData: TBaseNodeData;
+
+      if (temporaryConfiguration) {
+        updatedNodeData = {
+          ...node.data,
+          nodeTemporaryConfiguration: configuration,
+        };
+      } else {
+        updatedNodeData = {
+          ...node.data,
+          nodeConfiguration: configuration,
+        };
+      }
       return {
         ...node,
         data: updatedNodeData,

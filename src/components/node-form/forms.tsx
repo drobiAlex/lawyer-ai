@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import useStore from "@/common/store/store";
+import useStore, { StoreStateActions } from "@/common/store/store";
 import {
   Form,
   FormControl,
@@ -24,28 +24,33 @@ import {
   getCompanyFormSchema,
   getFormSchema,
 } from "@/components/node-form/form-schemas";
+import { CompanyMembersForm } from "@/components/node-form/company-members-form";
+import { MainCompanyForm } from "@/components/node-form/main-company-form";
+import { TNodeConfiguration } from "@/components/nodes/types";
+import { shallow } from "zustand/shallow";
 
-// function MembersForms(companyType: string, fields: any, register: any, remove: any, append: any) {
-//   if (!companyType) {
-//     return <> </>;
-//   }
-//   return (
-//     <>
-//   )
-// }
+const selector = (state: StoreStateActions) => ({
+  selectedNode: state.selectedNode,
+  companyOrgFormsTypes: state.companyOrgFormsTypes,
+  countries: state.countries,
+  fetchContainersConfiguration: state.fetchContainersConfiguration,
+  editSelectedNode: state.editSelectedNode,
+  updateNodeConfiguration: state.updateNodeConfiguration,
+});
 
 export function BaseNodeForm() {
-  const companyOrgFormsTypes = useStore((state) => state.companyOrgFormsTypes);
-  const editSelectedNode = useStore((state) => state.editSelectedNode);
-  const fetchContainersConfiguration = useStore(
-    (state) => state.fetchContainersConfiguration,
-  );
-  const [companyType, setCompanyType] = useState("");
+  const {
+    selectedNode,
+    companyOrgFormsTypes,
+    countries,
+    fetchContainersConfiguration,
+    editSelectedNode,
+    updateNodeConfiguration,
+  } = useStore(selector, shallow);
 
-  useEffect(() => {
-    // Fetch data
-    fetchContainersConfiguration();
-  }, []);
+  const [companyType, setCompanyType] = useState(
+    selectedNode?.data?.nodeTemporaryConfiguration?.nodeType || "",
+  );
 
   const mappedCompanyTypes: string[] = companyOrgFormsTypes.map((type) => {
     return type.name.toLowerCase() === "llc"
@@ -53,19 +58,27 @@ export function BaseNodeForm() {
       : type.name;
   });
 
+  function getDefaultFormValues() {
+    return (
+      selectedNode?.data?.nodeTemporaryConfiguration || {
+        nodeNamed: "",
+        nodeType: "",
+        people: [{ name: "", memberInterest: 0, residence: "" }],
+        shareCapital: 0,
+        directors: 0,
+      }
+    );
+  }
+
   const baseFormSchema = getFormSchema(mappedCompanyTypes);
   const companyFormSchema = companyType ? getCompanyFormSchema() : z.object({});
 
   const form = useForm({
     resolver: zodResolver(baseFormSchema.merge(companyFormSchema)),
-    defaultValues: {
-      nodeNamed: "",
-      nodeType: "",
-      people: [{ name: "", surname: "", residence: "" }],
-    },
+    defaultValues: getDefaultFormValues(),
   });
 
-  const { control, handleSubmit, watch, register } = form;
+  const { control, handleSubmit, watch, register, getValues } = form;
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -74,7 +87,22 @@ export function BaseNodeForm() {
 
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
-      if (value !== undefined && name === "nodeType") {
+      const formTempState = getValues();
+      const nodeTempConfiguration: TNodeConfiguration = {
+        nodeName: formTempState.nodeNamed,
+        nodeType: formTempState.nodeType,
+        people: formTempState.people,
+        shareCapital: formTempState.shareCapital,
+        directors: formTempState.directors,
+        nodeValidated: false,
+      };
+
+      // Verify selectedNode is not null and update node configuration
+      if (!selectedNode?.id) return;
+      updateNodeConfiguration(selectedNode?.id, nodeTempConfiguration, true);
+
+      if (name === "nodeType" && value) {
+        // @ts-ignore
         setCompanyType(value);
       }
     });
@@ -89,13 +117,13 @@ export function BaseNodeForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="w-max space-y-6">
         <FormField
           name="nodeNamed"
           control={control}
           render={({ field }) => (
             <FormItem>
-              <div className="flex flex-row gap-2 py-2 items-center">
+              <div className="flex flex-col gap-2 py-2 items-start">
                 <FormLabel>Node name</FormLabel>
                 <Input type="text" placeholder="Node name" {...field} />
               </div>
@@ -108,7 +136,7 @@ export function BaseNodeForm() {
           control={control}
           render={({ field }) => (
             <FormItem>
-              <div className="flex flex-row gap-2 py-2 items-center">
+              <div className="flex flex-col gap-2 py-2 items-start">
                 <FormLabel>Node type</FormLabel>
                 <Select
                   onValueChange={field.onChange}
@@ -134,33 +162,23 @@ export function BaseNodeForm() {
         />
         {companyType && (
           <>
-            {fields.map((field, index) => (
-              <div key={field.id} className="flex flex-col gap-2">
-                <Input
-                  {...register(`people.${index}.name`)}
-                  placeholder="Name"
-                />
-                <Input
-                  {...register(`people.${index}.surname`)}
-                  placeholder="Surname"
-                />
-                <Input
-                  {...register(`people.${index}.residence`)}
-                  placeholder="Residence"
-                />
-                <Button type="button" onClick={() => remove(index)}>
-                  Remove
-                </Button>
-              </div>
-            ))}
-            <Button
-              type="button"
-              onClick={() => append({ name: "", surname: "", residence: "" })}
-            >
-              Add Member
-            </Button>
+            <CompanyMembersForm
+              fields={fields}
+              control={control}
+              append={append}
+              remove={remove}
+              countries={countries}
+            />
+            <MainCompanyForm control={control} />
           </>
         )}
+
+        {/*Debug form state:*/}
+        {/*{formState.errors && (*/}
+        {/*  <pre>{JSON.stringify(formState.errors, null, 2)}</pre>*/}
+        {/*)*/}
+        {/*}*/}
+
         <Button type="submit">Submit</Button>
       </form>
     </Form>

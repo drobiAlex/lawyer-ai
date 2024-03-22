@@ -1,6 +1,6 @@
 import "reactflow/dist/style.css";
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import ReactFlow, {
   Background,
   Controls,
@@ -10,13 +10,15 @@ import ReactFlow, {
 } from "reactflow";
 import { shallow } from "zustand/shallow";
 
-import useStore, { RFState } from "@/common/store/store";
+import useStore, { StoreStateActions } from "@/common/store/store";
 import CustomEdge from "@/components/edges/CustomEdge";
 import { systemSupportedNodes } from "@/components/supported_nodes";
 import { DownloadButton } from "@/components/flow/DownloadButton";
-import { BaseNodeData } from "@/app/builder/types";
+import { TBaseNodeData } from "@/components/nodes/types";
+import { undefined } from "zod";
+import { randomName } from "@/lib/utils";
 
-const selector = (state: RFState) => ({
+const selector = (state: StoreStateActions) => ({
   nodes: state.nodes,
   edges: state.edges,
   nodeConfig: state.selectedNode,
@@ -24,7 +26,7 @@ const selector = (state: RFState) => ({
   onEdgesChange: state.onEdgesChange,
   addNode: state.addNode,
   onConnect: state.onConnect,
-  fetchContainers: state.fetchContainers,
+  fetchContainersConfiguration: state.fetchContainersConfiguration,
   setSelectedNode: state.setSelectedNode,
   deleteSelectedNode: state.deleteSelectedNode,
 });
@@ -38,13 +40,16 @@ function StructureCanvas() {
     onEdgesChange,
     addNode,
     onConnect,
-    fetchContainers,
     setSelectedNode,
     deleteSelectedNode,
+    fetchContainersConfiguration,
   } = useStore(selector, shallow);
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance<"NodeData", "EdgeData">>();
 
+  useEffect(() => {
+    fetchContainersConfiguration();
+  }, []);
   const nodeTypes = useMemo(() => systemSupportedNodes, []);
 
   const edgeTypes = useMemo(
@@ -78,23 +83,25 @@ function StructureCanvas() {
         y: event.clientY,
       });
 
+      const nodeLabel = randomName();
+      const baseNodeData: TBaseNodeData = {
+        label: `${nodeLabel.charAt(0).toUpperCase()}${nodeLabel.slice(1)}`,
+        onConfigIconClick: setSelectedNode,
+        onDeleteIconClick: deleteSelectedNode,
+        IconComponent: undefined,
+        nodeConfiguration: null,
+        nodeTemporaryConfiguration: null,
+      };
+
       addNode({
         id: Math.random().toString(),
         type: type,
         position,
-        data: {
-          label: `${type} node`,
-          onConfigIconClick: setSelectedNode,
-          onDeleteIconClick: deleteSelectedNode,
-        },
+        data: baseNodeData,
       });
     },
     [reactFlowInstance],
   );
-
-  function onClickFn() {
-    fetchContainers();
-  }
 
   function onPaneClick() {
     setSelectedNode(null);

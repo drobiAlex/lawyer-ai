@@ -5,7 +5,7 @@ import {
   MainCompanyNode,
   SubsidiaryCompanyNode,
   UnrelatedCompanyNode,
-} from "@/components/nodes/ContainerNodes";
+} from "@/components/nodes/nodes";
 
 export const systemSupportedNodes = {
   main_company: MainCompanyNode,

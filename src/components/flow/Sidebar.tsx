@@ -7,8 +7,9 @@ import { systemSupportedNodes } from "@/components/supported_nodes";
 import { precisionPrefix } from "d3-format";
 import { TBaseNodeData } from "@/components/nodes/types";
 import { undefined } from "zod";
+import { memo, useMemo } from "react";
 
-export function Sidebar() {
+function Sidebar() {
   const onDragStart = (event: React.DragEvent, nodeType: string) => {
     event.dataTransfer.setData("application/reactflow", nodeType);
     event.dataTransfer.effectAllowed = "move";
@@ -40,9 +41,12 @@ export function Sidebar() {
     <div className="pt-3 flex flex-col gap-4">
       {Array.from(Object.entries(systemSupportedNodes)).map(
         ([nodeType, NodeClass], index) => {
+          let capitalizedTypeName =
+            nodeType.charAt(0).toUpperCase() + nodeType.slice(1);
+          capitalizedTypeName = capitalizedTypeName.split("_").join(" ");
           const data = {
             ...nodeProps.data,
-            label: "Node name",
+            label: capitalizedTypeName,
           };
           const props = {
             ...nodeProps,
@@ -63,3 +67,5 @@ export function Sidebar() {
     </div>
   );
 }
+
+export default memo(Sidebar);

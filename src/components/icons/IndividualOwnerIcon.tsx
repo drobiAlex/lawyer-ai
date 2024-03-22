@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 function IndividualOwnerIcon() {
   return (
     <svg
@@ -7,10 +9,10 @@ function IndividualOwnerIcon() {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <rect x="14" y="15" width="20" height="20" rx="10" fill="#94E60F" />
-      <rect x="3.5" y="3.5" width="35" height="35" rx="17.5" stroke="#94E60F" />
+      <rect x="14" y="15" width="20" height="20" rx="10" fill="#152BC5" />
+      <rect x="3.5" y="3.5" width="35" height="35" rx="17.5" stroke="#152BC5" />
     </svg>
   );
 }
 
-export default IndividualOwnerIcon;
+export default memo(IndividualOwnerIcon);

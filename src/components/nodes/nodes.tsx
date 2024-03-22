@@ -79,7 +79,7 @@ function NodeDetails({
         <div className="flex-wrap-reverse">
           <h6 className="text-lg">{data.label}</h6>
         </div>
-        <h6 className="text-sm">{typeName}</h6>
+        {!data.isPreview && <h6 className="text-sm">{typeName}</h6>}
       </div>
     </div>
   );

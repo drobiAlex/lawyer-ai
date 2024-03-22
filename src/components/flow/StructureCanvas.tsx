@@ -50,6 +50,7 @@ function StructureCanvas() {
   useEffect(() => {
     fetchContainersConfiguration();
   }, []);
+
   const nodeTypes = useMemo(() => systemSupportedNodes, []);
 
   const edgeTypes = useMemo(

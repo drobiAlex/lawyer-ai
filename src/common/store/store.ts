@@ -1,5 +1,10 @@
 import axios from "axios";
-import type { ICountry } from "countries-list";
+import {
+  getCountryCode,
+  getEmojiFlag,
+  ICountry,
+  TCountryCode,
+} from "countries-list";
 import { countries } from "countries-list";
 import {
   addEdge,
@@ -19,7 +24,11 @@ import { mountStoreDevtool } from "simple-zustand-devtools";
 import { create } from "zustand";
 
 import { CompanyOrgForm, CompanyOrgFormType } from "@/common/store/api";
-import { TBaseNodeData, TNodeConfiguration } from "@/components/nodes/types";
+import {
+  TBaseNodeData,
+  TIndividualOwnerConfiguration,
+  TMainCompanyConfiguration,
+} from "@/components/nodes/types";
 import { apiRequestConfig, getEndpoint } from "@/lib/http";
 
 // eslint-disable-next-line no-unused-vars
@@ -27,6 +36,7 @@ export type addNodeType = (node: TLawframeNode) => void;
 export type TLawframeNode = Node & {
   data: TBaseNodeData;
 };
+export type CountryWithFlagEmoji = ICountry & { flag: string };
 // eslint-disable-next-line no-unused-vars
 type setSelectedNodeType = (nodeId: string | null) => void;
 // eslint-disable-next-line no-unused-vars
@@ -38,7 +48,7 @@ export type StoreState = {
   selectedNode: Node | null;
   nodeTypes: any;
   edgeTypes: any;
-  countries: ICountry[];
+  countries: CountryWithFlagEmoji[];
   supportedCountries: string[];
   companyOrgForms: CompanyOrgForm[];
   companyOrgFormsTypes: CompanyOrgFormType[];
@@ -55,7 +65,7 @@ export type Actions = {
   editSelectedNode: (label: string, type: string) => void;
   updateNodeConfiguration: (
     nodeId: string,
-    configuration: TNodeConfiguration,
+    configuration: TMainCompanyConfiguration | TIndividualOwnerConfiguration,
     temporaryConfiguration: boolean,
   ) => void;
 };
@@ -89,6 +99,7 @@ const useStore = create<StoreState & Actions>((set, get) => ({
     });
   },
   onConnect: (connection: Connection) => {
+    // const edge = { ...connection, type: 'custom' };
     set({
       edges: addEdge(connection, get().edges),
     });
@@ -131,7 +142,12 @@ const useStore = create<StoreState & Actions>((set, get) => ({
           });
         }
         set({
-          countries: countriesList,
+          countries: countriesList.map((country) => {
+            return {
+              ...country,
+              flag: getEmojiFlag(getCountryCode(country.name) as TCountryCode),
+            };
+          }),
         });
       })
       .catch((error) => {
@@ -172,7 +188,7 @@ const useStore = create<StoreState & Actions>((set, get) => ({
   },
   updateNodeConfiguration: (
     nodeId: string,
-    configuration: TNodeConfiguration,
+    configuration: TMainCompanyConfiguration | TIndividualOwnerConfiguration,
     temporaryConfiguration: boolean,
   ) => {
     const updatedNodes = get().nodes.map((node) => {

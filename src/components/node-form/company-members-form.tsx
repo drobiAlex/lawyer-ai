@@ -78,7 +78,7 @@ export function CompanyMembersForm({
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select company type" />
+                          <SelectValue placeholder="Member residence" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>

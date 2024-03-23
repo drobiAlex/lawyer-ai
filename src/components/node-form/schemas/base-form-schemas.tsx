@@ -1,8 +1,8 @@
 import { z } from "zod";
 
-function getFormSchema(mappedTypes: string[]) {
+function getBaseFormSchema(mappedTypes: string[]) {
   return z.object({
-    nodeNamed: z
+    nodeTitle: z
       .string()
       .min(2, { message: "Node name must be at least 2 characters." }),
     companyResidence: z.string().min(2, { message: "Residence is required." }),
@@ -34,4 +34,4 @@ function getCompanyFormSchema() {
   });
 }
 
-export { getFormSchema, getCompanyFormSchema };
+export { getBaseFormSchema, getCompanyFormSchema };

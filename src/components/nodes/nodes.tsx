@@ -1,4 +1,4 @@
-import { Handle, NodeProps, NodeResizeControl, Position } from "reactflow";
+import { NodeProps, NodeResizeControl } from "reactflow";
 import { TBaseNodeData } from "@/components/nodes/types";
 import React, { memo, useMemo } from "react";
 import ClientsCustomersIcon from "@/components/icons/ClientsCustomersIcon";
@@ -9,26 +9,32 @@ import SubsidiaryCompanyIcon from "@/components/icons/SubsidiaryCompanyIcon";
 import UnrelatedCompanyIcon from "@/components/icons/UnrelatedCompanyIcon";
 import { Settings, Trash2 } from "react-feather";
 import { COLORS } from "@/components/colors/colors";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { BaseNodeForm } from "@/components/node-form/forms";
+import { IndividualOwnerForm } from "@/components/node-form/individual-owner-form";
+import NodeHandlers from "@/components/nodes/handlers";
 
 const controlStyle = {
   background: "transparent",
   border: "none",
 };
 
-function NodeSheetForm() {
-  return <BaseNodeForm />;
+type NodeFormType = {
+  [key: string]: React.FC;
+};
+
+const nodeFormTypes: NodeFormType = {
+  main_company: BaseNodeForm,
+  individual_owner: IndividualOwnerForm,
+};
+
+function NodeSheetForm({ nodeType }: { nodeType: string }) {
+  const FormComponent = nodeFormTypes[nodeType];
+  if (!FormComponent) {
+    // Handle unknown node types
+    return <div>Error: Unknown node type</div>;
+  }
+  return <FormComponent />;
 }
 
 function NodeDetails({
@@ -45,7 +51,9 @@ function NodeDetails({
       </div>
       <div className="flex-1 flex-col">
         <div className="flex-wrap-reverse">
-          <h6 className="text-lg">{data.label}</h6>
+          <h6 className="text-lg">
+            {data?.nodeConfiguration?.nodeTitle || data?.randomName}
+          </h6>
         </div>
         {!data.isPreview && <h6 className="text-sm">{typeName}</h6>}
       </div>
@@ -96,7 +104,7 @@ function ContainerNode({ id, type, data }: NodeProps<TBaseNodeData>) {
       }}
     >
       <SheetContent className="sm:max-w-none sm:max-w-xl">
-        <NodeSheetForm />
+        <NodeSheetForm nodeType={type} />
       </SheetContent>
       <div className="flex flex-row h-full px-6 py-8 rounded-md border bg-white border-stone-400 cursor-pointer">
         <NodeDetails data={data} typeName={typeName} />
@@ -108,8 +116,7 @@ function ContainerNode({ id, type, data }: NodeProps<TBaseNodeData>) {
               minWidth={400}
               minHeight={100}
             />
-            <Handle type="source" position={Position.Top} />
-            <Handle type="target" position={Position.Bottom} />
+            <NodeHandlers nodeType={type} />
           </>
         )}
       </div>

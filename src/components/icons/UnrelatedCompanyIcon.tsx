@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 function UnrelatedCompanyIcon() {
   return (
     <svg
@@ -21,7 +23,7 @@ function UnrelatedCompanyIcon() {
         width="11.2"
         height="11.2"
         rx="5.6"
-        fill="#94E60F"
+        fill="#152BC5"
       />
       <rect
         x="14.4668"
@@ -29,7 +31,7 @@ function UnrelatedCompanyIcon() {
         width="11.2"
         height="11.2"
         rx="5.6"
-        fill="#94E60F"
+        fill="#152BC5"
       />
       <rect
         x="30.3337"
@@ -37,10 +39,10 @@ function UnrelatedCompanyIcon() {
         width="11.2"
         height="11.2"
         rx="5.6"
-        fill="#94E60F"
+        fill="#152BC5"
       />
     </svg>
   );
 }
 
-export default UnrelatedCompanyIcon;
+export default memo(UnrelatedCompanyIcon);

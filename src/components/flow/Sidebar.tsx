@@ -2,21 +2,22 @@
 
 // @flow
 import * as React from "react";
-import { uniqueId } from "@/lib/utils";
+import { capitalizeNodeType, uniqueId } from "@/lib/utils";
 import { systemSupportedNodes } from "@/components/supported_nodes";
 import { precisionPrefix } from "d3-format";
 import { TBaseNodeData } from "@/components/nodes/types";
 import { undefined } from "zod";
+import { memo, useMemo } from "react";
 
-export function Sidebar() {
+function Sidebar() {
   const onDragStart = (event: React.DragEvent, nodeType: string) => {
     event.dataTransfer.setData("application/reactflow", nodeType);
     event.dataTransfer.effectAllowed = "move";
   };
 
   const nodeData: TBaseNodeData = {
-    label: "1",
-    residence: "USA",
+    label: "",
+    residence: "",
     isPreview: true,
     IconComponent: <div />,
     onConfigIconClick: () => {},
@@ -39,23 +40,23 @@ export function Sidebar() {
   return (
     <div className="pt-3 flex flex-col gap-4">
       {Array.from(Object.entries(systemSupportedNodes)).map(
-        ([nodeType, NodeClass], index) => {
+        ([previewNodeType, PreviewNodeClass], index) => {
           const data = {
             ...nodeProps.data,
-            label: "Node name",
+            label: capitalizeNodeType(previewNodeType),
           };
           const props = {
             ...nodeProps,
-            type: nodeType,
+            type: previewNodeType,
             data: data,
           };
           return (
             <div
               key={index}
               draggable
-              onDragStart={(event) => onDragStart(event, nodeType)}
+              onDragStart={(event) => onDragStart(event, previewNodeType)}
             >
-              <NodeClass {...props} />
+              <PreviewNodeClass {...props} />
             </div>
           );
         },
@@ -63,3 +64,5 @@ export function Sidebar() {
     </div>
   );
 }
+
+export default memo(Sidebar);

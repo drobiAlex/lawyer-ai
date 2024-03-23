@@ -27,40 +27,8 @@ const controlStyle = {
   border: "none",
 };
 
-function NodeSheetHeader() {
-  return (
-    <SheetHeader>
-      <SheetTitle>Edit node</SheetTitle>
-      <SheetDescription>
-        Configure parameters for the node. Once ready, click Save.
-      </SheetDescription>
-    </SheetHeader>
-  );
-}
-
 function NodeSheetForm() {
-  return (
-    <div className="py-6 pl-1">
-      <BaseNodeForm />
-    </div>
-  );
-}
-
-function NodeSheetFooter() {
-  return (
-    <SheetFooter>
-      <SheetClose asChild>
-        <Button variant="outline" type="reset">
-          Close
-        </Button>
-      </SheetClose>
-      <SheetClose asChild>
-        <Button disabled={true} type="submit">
-          Save changes
-        </Button>
-      </SheetClose>
-    </SheetFooter>
-  );
+  return <BaseNodeForm />;
 }
 
 function NodeDetails({
@@ -79,7 +47,7 @@ function NodeDetails({
         <div className="flex-wrap-reverse">
           <h6 className="text-lg">{data.label}</h6>
         </div>
-        <h6 className="text-sm">{typeName}</h6>
+        {!data.isPreview && <h6 className="text-sm">{typeName}</h6>}
       </div>
     </div>
   );
@@ -128,13 +96,7 @@ function ContainerNode({ id, type, data }: NodeProps<TBaseNodeData>) {
       }}
     >
       <SheetContent className="sm:max-w-none sm:max-w-xl">
-        <div className="flex flex-col h-full justify-between overflow-scroll">
-          <div>
-            <NodeSheetHeader />
-            <NodeSheetForm />
-          </div>
-          <NodeSheetFooter />
-        </div>
+        <NodeSheetForm />
       </SheetContent>
       <div className="flex flex-row h-full px-6 py-8 rounded-md border bg-white border-stone-400 cursor-pointer">
         <NodeDetails data={data} typeName={typeName} />

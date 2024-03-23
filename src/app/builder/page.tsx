@@ -7,7 +7,7 @@ import { UserButton } from "@clerk/nextjs";
 import React, { useRef, useState } from "react";
 import { ReactFlowProvider } from "reactflow";
 
-import { Sidebar } from "@/components/flow/Sidebar";
+import Sidebar from "@/components/flow/Sidebar";
 import StructureCanvas from "@/components/flow/StructureCanvas";
 import TopToolbar from "@/components/toolbars/TopToolbar";
 

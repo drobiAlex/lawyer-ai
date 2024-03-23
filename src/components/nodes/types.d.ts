@@ -11,7 +11,7 @@ export type TNodeType =
 export type TNodeConfiguration = {
   nodeValidated: boolean;
   nodeName: string;
-  nodeType: string;
+  companyType: string;
   people: {
     name: string;
     memberInterest: number;

@@ -18,3 +18,8 @@ export const randomName = () =>
     dictionaries: [adjectives, colors, animals],
     separator: " ",
   });
+
+export function capitalizeNodeType(str: string): string {
+  const nodeType = str.charAt(0).toUpperCase() + str.slice(1);
+  return nodeType.split("_").join(" ");
+}

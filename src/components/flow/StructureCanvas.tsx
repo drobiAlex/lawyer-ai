@@ -3,20 +3,26 @@ import "reactflow/dist/style.css";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import ReactFlow, {
   Background,
+  Connection,
   Controls,
+  Edge,
   NodeOrigin,
   Panel,
   ReactFlowInstance,
+  useReactFlow,
 } from "reactflow";
 import { shallow } from "zustand/shallow";
 
-import useStore, { StoreStateActions } from "@/common/store/store";
+import useStore, {
+  TLawframeNode,
+  StoreStateActions,
+} from "@/common/store/store";
 import CustomEdge from "@/components/edges/CustomEdge";
 import { systemSupportedNodes } from "@/components/supported_nodes";
 import { DownloadButton } from "@/components/flow/DownloadButton";
 import { TBaseNodeData } from "@/components/nodes/types";
 import { undefined } from "zod";
-import { randomName } from "@/lib/utils";
+import { randomName, uniqueId } from "@/lib/utils";
 
 const selector = (state: StoreStateActions) => ({
   nodes: state.nodes,
@@ -32,6 +38,8 @@ const selector = (state: StoreStateActions) => ({
 });
 const nodeOrigin: NodeOrigin = [0, 0];
 
+const flowKey = "working-flow";
+
 function StructureCanvas() {
   const {
     nodes,
@@ -46,10 +54,61 @@ function StructureCanvas() {
   } = useStore(selector, shallow);
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance<"NodeData", "EdgeData">>();
+  const { setViewport } = useReactFlow();
+
+  function saveFlow() {
+    if (!reactFlowInstance) {
+      return;
+    }
+    const flow = reactFlowInstance.toObject();
+    localStorage.setItem(flowKey, JSON.stringify(flow));
+  }
+
+  const onNodeChangeHandler = useCallback(
+    (nodeChanges: any) => {
+      onNodesChange(nodeChanges);
+      saveFlow();
+    },
+    [nodes],
+  );
+
+  const onEdgesChangeHandler = useCallback(
+    (edgeChanges: any) => {
+      onEdgesChange(edgeChanges);
+      saveFlow();
+    },
+    [edges],
+  );
 
   useEffect(() => {
-    fetchContainersConfiguration();
+    const restoreFlow = async () => {
+      const flowStorage = localStorage.getItem(flowKey);
+      if (!flowStorage) {
+        return;
+      }
+      const flow = JSON.parse(flowStorage);
+      if (flow) {
+        const { x = 0, y = 0, zoom = 1 } = flow.viewport;
+        flow.nodes.forEach((node: TLawframeNode) => {
+          const restoredNode = {
+            ...node,
+            data: {
+              onConfigIconClick: setSelectedNode,
+              onDeleteIconClick: deleteSelectedNode,
+              ...node.data,
+            },
+          };
+          addNode(restoredNode);
+        });
+        flow.edges.forEach((edge: Edge) => {
+          onConnect({ source: edge.source, target: edge.target } as Connection);
+        });
+        setViewport({ x, y, zoom });
+      }
+    };
+    restoreFlow().then();
   }, []);
+
   const nodeTypes = useMemo(() => systemSupportedNodes, []);
 
   const edgeTypes = useMemo(
@@ -94,7 +153,7 @@ function StructureCanvas() {
       };
 
       addNode({
-        id: Math.random().toString(),
+        id: uniqueId(),
         type: type,
         position,
         data: baseNodeData,
@@ -111,8 +170,8 @@ function StructureCanvas() {
     <ReactFlow
       nodes={nodes}
       edges={edges}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
+      onNodesChange={onNodeChangeHandler}
+      onEdgesChange={onEdgesChangeHandler}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       onConnect={onConnect}
@@ -120,7 +179,6 @@ function StructureCanvas() {
       onInit={setReactFlowInstance}
       onDragOver={onDragOver}
       onDrop={onDrop}
-      onPaneClick={onPaneClick}
       deleteKeyCode={null}
       fitView
     >

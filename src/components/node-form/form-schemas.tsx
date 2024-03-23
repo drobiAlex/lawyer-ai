@@ -5,8 +5,9 @@ function getFormSchema(mappedTypes: string[]) {
     nodeNamed: z
       .string()
       .min(2, { message: "Node name must be at least 2 characters." }),
-    nodeType: z.string().refine((val) => mappedTypes.includes(val), {
-      message: "Invalid node type.",
+    companyResidence: z.string().min(2, { message: "Residence is required." }),
+    companyType: z.string().refine((val) => mappedTypes.includes(val), {
+      message: "Invalid company type.",
     }),
   });
 }

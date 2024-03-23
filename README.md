@@ -20,10 +20,7 @@ Add the following to the package.json file
 ```json
 {
   "lint-staged": {
-    "**/*.{ts,tsx}": [
-      "prettier --write .",
-      "eslint --fix ."
-    ]
+    "**/*.{ts,tsx}": ["prettier --write .", "eslint --fix ."]
   }
 }
 ```

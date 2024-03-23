@@ -23,17 +23,17 @@ import { TBaseNodeData, TNodeConfiguration } from "@/components/nodes/types";
 import { apiRequestConfig, getEndpoint } from "@/lib/http";
 
 // eslint-disable-next-line no-unused-vars
-export type addNodeType = (node: LawframeNodeType) => void;
+export type addNodeType = (node: TLawframeNode) => void;
+export type TLawframeNode = Node & {
+  data: TBaseNodeData;
+};
 // eslint-disable-next-line no-unused-vars
 type setSelectedNodeType = (nodeId: string | null) => void;
 // eslint-disable-next-line no-unused-vars
 type deleteSelectedNodeType = (nodeId: string) => void;
-type LawframeNodeType = Node & {
-  data: TBaseNodeData;
-};
 
 export type StoreState = {
-  nodes: LawframeNodeType[];
+  nodes: TLawframeNode[];
   edges: Edge[];
   selectedNode: Node | null;
   nodeTypes: any;

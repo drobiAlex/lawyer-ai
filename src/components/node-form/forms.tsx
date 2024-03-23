@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import useStore, { StoreStateActions } from "@/common/store/store";
+import useStore from "@/common/store/store";
 import {
   Form,
   FormControl,
@@ -12,7 +12,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -22,71 +21,32 @@ import {
 } from "@/components/ui/select";
 import {
   getCompanyFormSchema,
-  getFormSchema,
-} from "@/components/node-form/form-schemas";
-import { CompanyMembersForm } from "@/components/node-form/company-members-form";
+  getBaseFormSchema,
+} from "@/components/node-form/schemas/base-form-schemas";
 import { MainCompanyForm } from "@/components/node-form/main-company-form";
-import { TNodeConfiguration } from "@/components/nodes/types";
+import { TMainCompanyConfiguration } from "@/components/nodes/types";
 import { shallow } from "zustand/shallow";
-import {
-  SheetClose,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
 import { capitalizeNodeType } from "@/lib/utils";
-import { getCountryCode, getEmojiFlag, TCountryCode } from "countries-list";
-
-const selector = (state: StoreStateActions) => ({
-  selectedNode: state.selectedNode,
-  companyOrgFormsTypes: state.companyOrgFormsTypes,
-  countries: state.countries,
-  fetchContainersConfiguration: state.fetchContainersConfiguration,
-  editSelectedNode: state.editSelectedNode,
-  updateNodeConfiguration: state.updateNodeConfiguration,
-});
-
-function NodeSheetHeader({ nodeType }: { nodeType: string }) {
-  return (
-    <SheetHeader>
-      <SheetTitle>Edit node</SheetTitle>
-      <SheetDescription>
-        {`Configure parameters for ${nodeType}. Once ready, click Save.`}
-      </SheetDescription>
-    </SheetHeader>
-  );
-}
-
-function NodeSheetFooter({ saveDisabled }: { saveDisabled: boolean }) {
-  return (
-    <SheetFooter>
-      <SheetClose asChild>
-        <Button variant="outline" type="reset">
-          Close
-        </Button>
-      </SheetClose>
-      <Button disabled={saveDisabled} type="submit">
-        Save changes
-      </Button>
-    </SheetFooter>
-  );
-}
+import {
+  CountriesSelectList,
+  NodeSheetFooter,
+  NodeSheetHeader,
+} from "@/components/node-form/misc-form";
+import { nodeConfigurationSelector } from "@/common/store/selectors";
 
 export function BaseNodeForm() {
   const {
     selectedNode,
     companyOrgFormsTypes,
     countries,
-    fetchContainersConfiguration,
-    editSelectedNode,
     updateNodeConfiguration,
-  } = useStore(selector, shallow);
+  } = useStore(nodeConfigurationSelector, shallow);
 
   const nodeType = useMemo(
     () => capitalizeNodeType(selectedNode?.type || ""),
     [selectedNode?.type],
   );
+
   const [companyType, setCompanyType] = useState(
     selectedNode?.data?.nodeTemporaryConfiguration?.companyType || "",
   );
@@ -109,7 +69,7 @@ export function BaseNodeForm() {
     );
   }
 
-  const baseFormSchema = getFormSchema(mappedCompanyTypes);
+  const baseFormSchema = getBaseFormSchema(mappedCompanyTypes);
   const companyFormSchema = companyType ? getCompanyFormSchema() : z.object({});
 
   const form = useForm({
@@ -127,8 +87,9 @@ export function BaseNodeForm() {
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
       const formTempState = getValues();
-      const nodeTempConfiguration: TNodeConfiguration = {
-        nodeName: formTempState.nodeNamed,
+      const nodeTempConfiguration: TMainCompanyConfiguration = {
+        nodeTitle: formTempState.nodeTitle,
+        companyResidence: formTempState.companyResidence,
         companyType: formTempState.companyType,
         people: formTempState.people,
         shareCapital: formTempState.shareCapital,
@@ -148,9 +109,21 @@ export function BaseNodeForm() {
     return () => subscription.unsubscribe();
   }, [watch]);
 
+  // Handle form submission
   function onSubmit(data: any) {
-    // Handle form submission
-    editSelectedNode(data.nodeNamed, "");
+    // Verify selectedNode is not null and update node configuration
+    if (!selectedNode?.id) return;
+
+    const nodeConfiguration: TMainCompanyConfiguration = {
+      nodeTitle: data.nodeTitle,
+      companyResidence: data.companyResidence,
+      companyType: data.companyType,
+      people: data.people,
+      shareCapital: data.shareCapital,
+      directors: data.directors,
+      nodeValidated: false,
+    };
+    updateNodeConfiguration(selectedNode?.id, nodeConfiguration, false);
   }
 
   return (
@@ -161,7 +134,7 @@ export function BaseNodeForm() {
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-full">
         <div>
           <FormField
-            name="nodeNamed"
+            name="nodeTitle"
             control={control}
             render={({ field }) => (
               <FormItem>
@@ -189,13 +162,7 @@ export function BaseNodeForm() {
                         <SelectValue placeholder="Select country" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
-                      {countries.map((country, id) => (
-                        <SelectItem key={id} value={country.name}>
-                          {`${getEmojiFlag(getCountryCode(country.name) as TCountryCode)} ${country.name}`}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
+                    <CountriesSelectList countries={countries} />
                   </Select>
                 </div>
                 <FormMessage />
@@ -233,13 +200,13 @@ export function BaseNodeForm() {
           />
           {companyType && (
             <>
-              <CompanyMembersForm
-                fields={fields}
-                control={control}
-                append={append}
-                remove={remove}
-                countries={countries}
-              />
+              {/*<CompanyMembersForm*/}
+              {/*  fields={fields}*/}
+              {/*  control={control}*/}
+              {/*  append={append}*/}
+              {/*  remove={remove}*/}
+              {/*  countries={countries}*/}
+              {/*/>*/}
               <MainCompanyForm control={control} />
             </>
           )}
@@ -250,7 +217,7 @@ export function BaseNodeForm() {
           {/*)*/}
           {/*}*/}
         </div>
-        <NodeSheetFooter saveDisabled={true} />
+        <NodeSheetFooter saveDisabled={false} />
       </form>
     </Form>
   );

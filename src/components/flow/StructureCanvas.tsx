@@ -106,7 +106,8 @@ function StructureCanvas() {
         setViewport({ x, y, zoom });
       }
     };
-    restoreFlow().then();
+    restoreFlow();
+    fetchContainersConfiguration();
   }, []);
 
   const nodeTypes = useMemo(() => systemSupportedNodes, []);
@@ -144,7 +145,7 @@ function StructureCanvas() {
 
       const nodeLabel = randomName();
       const baseNodeData: TBaseNodeData = {
-        label: `${nodeLabel.charAt(0).toUpperCase()}${nodeLabel.slice(1)}`,
+        randomName: `${nodeLabel.charAt(0).toUpperCase()}${nodeLabel.slice(1)}`,
         onConfigIconClick: setSelectedNode,
         onDeleteIconClick: deleteSelectedNode,
         IconComponent: undefined,

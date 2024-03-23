@@ -1,16 +1,12 @@
 import React from "react";
 
-export type TNodeType =
-  | "main_company"
-  | "client_customer"
-  | "individual_owner"
-  | "contractor"
-  | "subsidiary_company"
-  | "unrelated_company";
-
-export type TNodeConfiguration = {
+export type TBaseNodeConfiguration = {
   nodeValidated: boolean;
-  nodeName: string;
+  nodeTitle: string;
+};
+
+export type TMainCompanyConfiguration = TBaseNodeConfiguration & {
+  companyResidence?: string | null;
   companyType: string;
   people: {
     name: string;
@@ -21,11 +17,20 @@ export type TNodeConfiguration = {
   directors: number;
 };
 
+export type TIndividualOwnerConfiguration = TBaseNodeConfiguration & {
+  residence: string;
+};
+
 export type TBaseNodeData = {
-  label: string;
-  nodeConfiguration: TNodeConfiguration | null;
-  nodeTemporaryConfiguration: TNodeConfiguration | null;
-  residence?: string | null;
+  randomName: string;
+  nodeConfiguration:
+    | TMainCompanyConfiguration
+    | TIndividualOwnerConfiguration
+    | null;
+  nodeTemporaryConfiguration:
+    | TMainCompanyConfiguration
+    | TIndividualOwnerConfiguration
+    | null;
   isPreview?: boolean;
   IconComponent: React.ReactNode<any> | null;
   onConfigIconClick: (nodeId: string | null) => void;

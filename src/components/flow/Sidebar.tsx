@@ -2,12 +2,10 @@
 
 // @flow
 import * as React from "react";
+import { memo } from "react";
 import { capitalizeNodeType, uniqueId } from "@/lib/utils";
 import { systemSupportedNodes } from "@/components/supported_nodes";
-import { precisionPrefix } from "d3-format";
 import { TBaseNodeData } from "@/components/nodes/types";
-import { undefined } from "zod";
-import { memo, useMemo } from "react";
 
 function Sidebar() {
   const onDragStart = (event: React.DragEvent, nodeType: string) => {
@@ -16,8 +14,7 @@ function Sidebar() {
   };
 
   const nodeData: TBaseNodeData = {
-    label: "",
-    residence: "",
+    randomName: "",
     isPreview: true,
     IconComponent: <div />,
     onConfigIconClick: () => {},
@@ -43,7 +40,7 @@ function Sidebar() {
         ([previewNodeType, PreviewNodeClass], index) => {
           const data = {
             ...nodeProps.data,
-            label: capitalizeNodeType(previewNodeType),
+            randomName: capitalizeNodeType(previewNodeType),
           };
           const props = {
             ...nodeProps,

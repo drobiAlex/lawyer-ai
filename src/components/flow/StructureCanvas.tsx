@@ -6,16 +6,18 @@ import ReactFlow, {
   Connection,
   Controls,
   Edge,
-  NodeOrigin,
   Panel,
   ReactFlowInstance,
+  useOnViewportChange,
   useReactFlow,
+  Viewport,
 } from "reactflow";
 import { shallow } from "zustand/shallow";
 
 import useStore, {
-  TLawframeNode,
+  flowKey,
   StoreStateActions,
+  TLawframeNode,
 } from "@/common/store/store";
 import CustomEdge from "@/components/edges/CustomEdge";
 import { systemSupportedNodes } from "@/components/supported_nodes";
@@ -30,15 +32,13 @@ const selector = (state: StoreStateActions) => ({
   nodeConfig: state.selectedNode,
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
+  onViewPortChange: state.onViewPortChange,
   addNode: state.addNode,
   onConnect: state.onConnect,
   fetchContainersConfiguration: state.fetchContainersConfiguration,
   setSelectedNode: state.setSelectedNode,
   deleteSelectedNode: state.deleteSelectedNode,
 });
-const nodeOrigin: NodeOrigin = [0, 0];
-
-const flowKey = "working-flow";
 
 function StructureCanvas() {
   const {
@@ -46,6 +46,7 @@ function StructureCanvas() {
     edges,
     onNodesChange,
     onEdgesChange,
+    onViewPortChange,
     addNode,
     onConnect,
     setSelectedNode,
@@ -56,29 +57,11 @@ function StructureCanvas() {
     useState<ReactFlowInstance<"NodeData", "EdgeData">>();
   const { setViewport } = useReactFlow();
 
-  function saveFlow() {
-    if (!reactFlowInstance) {
-      return;
-    }
-    const flow = reactFlowInstance.toObject();
-    localStorage.setItem(flowKey, JSON.stringify(flow));
-  }
-
-  const onNodeChangeHandler = useCallback(
-    (nodeChanges: any) => {
-      onNodesChange(nodeChanges);
-      saveFlow();
+  useOnViewportChange({
+    onEnd: (viewport: Viewport) => {
+      if (reactFlowInstance) onViewPortChange(viewport);
     },
-    [nodes],
-  );
-
-  const onEdgesChangeHandler = useCallback(
-    (edgeChanges: any) => {
-      onEdgesChange(edgeChanges);
-      saveFlow();
-    },
-    [edges],
-  );
+  });
 
   useEffect(() => {
     const restoreFlow = async () => {
@@ -163,21 +146,19 @@ function StructureCanvas() {
     [reactFlowInstance],
   );
 
-  function onPaneClick() {
-    setSelectedNode(null);
-  }
-
   return (
     <ReactFlow
       nodes={nodes}
       edges={edges}
-      onNodesChange={onNodeChangeHandler}
-      onEdgesChange={onEdgesChangeHandler}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       onConnect={onConnect}
-      nodeOrigin={nodeOrigin}
-      onInit={setReactFlowInstance}
+      onInit={(onInitHandler) => {
+        console.log("onInitHandler");
+        setReactFlowInstance(onInitHandler);
+      }}
       onDragOver={onDragOver}
       onDrop={onDrop}
       deleteKeyCode={null}

@@ -35,7 +35,7 @@ function Sidebar() {
   };
 
   return (
-    <div className="pt-3 flex flex-col gap-4">
+    <div className="py-4 flex flex-col gap-4">
       {Array.from(Object.entries(systemSupportedNodes)).map(
         ([previewNodeType, PreviewNodeClass], index) => {
           const data = {

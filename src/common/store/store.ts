@@ -19,6 +19,7 @@ import {
   OnConnect,
   OnEdgesChange,
   OnNodesChange,
+  Viewport,
 } from "reactflow";
 import { mountStoreDevtool } from "simple-zustand-devtools";
 import { create } from "zustand";
@@ -30,6 +31,8 @@ import {
   TMainCompanyConfiguration,
 } from "@/components/nodes/types";
 import { apiRequestConfig, getEndpoint } from "@/lib/http";
+
+export const flowKey = "working-flow";
 
 // eslint-disable-next-line no-unused-vars
 export type addNodeType = (node: TLawframeNode) => void;
@@ -43,6 +46,7 @@ type setSelectedNodeType = (nodeId: string | null) => void;
 type deleteSelectedNodeType = (nodeId: string) => void;
 
 export type StoreState = {
+  viewport: Viewport;
   nodes: TLawframeNode[];
   edges: Edge[];
   selectedNode: Node | null;
@@ -68,12 +72,16 @@ export type Actions = {
     configuration: TMainCompanyConfiguration | TIndividualOwnerConfiguration,
     temporaryConfiguration: boolean,
   ) => void;
+  backup: () => void;
+  // eslint-disable-next-line no-unused-vars
+  onViewPortChange: (viewport: Viewport) => void;
 };
 
 // merge state and actions
 export type StoreStateActions = StoreState & Actions;
 
 const useStore = create<StoreState & Actions>((set, get) => ({
+  viewport: { x: 0, y: 0, zoom: 1 },
   nodes: [],
   edges: [],
   nodeTypes: {},
@@ -83,26 +91,50 @@ const useStore = create<StoreState & Actions>((set, get) => ({
   selectedNode: null,
   companyOrgForms: [],
   companyOrgFormsTypes: [],
+  backup: () => {
+    const flow = {
+      edges: get().edges,
+      nodes: get().nodes,
+      viewport: get().viewport,
+    };
+    localStorage.setItem(flowKey, JSON.stringify(flow));
+  },
+  onViewPortChange: (viewport: Viewport) => {
+    set({
+      viewport: viewport,
+    });
+  },
   onNodesChange: (nodeChanges: NodeChange[]) => {
     set({
       nodes: applyNodeChanges(nodeChanges, get().nodes),
     });
+    // Save to local storage
+    get().backup();
   },
   onEdgesChange: (edgeChanges: EdgeChange[]) => {
     set({
       edges: applyEdgeChanges(edgeChanges, get().edges),
     });
+    // Save to local storage
+    get().backup();
   },
   addNode: (node: Node) => {
     set({
       nodes: [...get().nodes, node],
     });
   },
-  onConnect: (connection: Connection) => {
-    const edge = { ...connection, type: "custom" };
+  onConnect: (connection: Connection | Edge) => {
+    if (connection as Edge) {
+      const edge = { ...connection, type: "custom" };
+      set({
+        edges: addEdge(edge, get().edges),
+      });
+    }
     set({
-      edges: addEdge(edge, get().edges),
+      edges: addEdge(connection as Connection, get().edges),
     });
+    // Save to local storage
+    get().backup();
   },
 
   fetchContainersConfiguration: async () => {

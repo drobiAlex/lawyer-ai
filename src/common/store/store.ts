@@ -99,9 +99,9 @@ const useStore = create<StoreState & Actions>((set, get) => ({
     });
   },
   onConnect: (connection: Connection) => {
-    // const edge = { ...connection, type: 'custom' };
+    const edge = { ...connection, type: "custom" };
     set({
-      edges: addEdge(connection, get().edges),
+      edges: addEdge(edge, get().edges),
     });
   },
 

@@ -22,8 +22,8 @@ import {
 import {
   getCompanyFormSchema,
   getBaseFormSchema,
-} from "@/components/node-form/schemas/base-form-schemas";
-import { MainCompanyForm } from "@/components/node-form/main-company-form";
+} from "@/components/node-forms/schemas/base-form-schemas";
+import { MainCompanyForm } from "@/components/node-forms/main-company-form";
 import { TMainCompanyConfiguration } from "@/components/nodes/types";
 import { shallow } from "zustand/shallow";
 import { capitalizeNodeType } from "@/lib/utils";
@@ -31,7 +31,7 @@ import {
   CountriesSelectList,
   NodeSheetFooter,
   NodeSheetHeader,
-} from "@/components/node-form/misc-form";
+} from "@/components/node-forms/misc-form";
 import { nodeConfigurationSelector } from "@/common/store/selectors";
 import { Split } from "lucide-react";
 import { Separator } from "@/components/ui/separator";

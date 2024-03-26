@@ -3,7 +3,7 @@ import { nodeConfigurationSelector } from "@/common/store/selectors";
 import { shallow } from "zustand/shallow";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { capitalizeNodeType } from "@/lib/utils";
-import { getIndividualOwnerSchema } from "@/components/node-form/schemas/individual-owner-schemas";
+import { getIndividualOwnerSchema } from "@/components/node-forms/schemas/individual-owner-schemas";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -18,7 +18,7 @@ import {
   CountriesSelectList,
   NodeSheetFooter,
   NodeSheetHeader,
-} from "@/components/node-form/misc-form";
+} from "@/components/node-forms/misc-form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TIndividualOwnerConfiguration } from "@/components/nodes/types";
@@ -115,7 +115,7 @@ export function IndividualOwnerForm() {
             </FormItem>
           )}
         />
-        <NodeSheetFooter hidden={false} />
+        <NodeSheetFooter />
       </form>
     </Form>
   );

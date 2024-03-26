@@ -19,7 +19,7 @@ import useStore, {
   StoreStateActions,
   TLawframeNode,
 } from "@/common/store/store";
-import CustomEdge from "@/components/edges/CustomEdge";
+import CustomEdge from "@/components/edges/IndividualOwnerEdge";
 import { systemSupportedNodes } from "@/components/supported_nodes";
 import { DownloadButton } from "@/components/flow/DownloadButton";
 import { TBaseNodeData } from "@/components/nodes/types";

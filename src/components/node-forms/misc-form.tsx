@@ -24,7 +24,7 @@ export function NodeSheetHeader({ nodeType }: { nodeType: string }) {
 export function NodeSheetFooter({
   closeButtonRef,
 }: {
-  closeButtonRef: React.RefObject<HTMLButtonElement>;
+  closeButtonRef?: React.RefObject<HTMLButtonElement> | null;
 }) {
   return (
     <SheetFooter className="py-4">

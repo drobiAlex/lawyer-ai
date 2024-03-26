@@ -11,9 +11,9 @@ import { shallow } from "zustand/shallow";
 import useStore, { StoreStateActions } from "@/common/store/store";
 import { TEdgeData } from "@/components/nodes/types";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { IndividualOwnerForm } from "@/components/node-form/individual-owner-form";
+import { IndividualOwnerForm } from "@/components/node-forms/individual-owner-form";
 
-function CustomEdge({
+function IndividualOwnerEdge({
   id,
   sourceX,
   sourceY,
@@ -87,4 +87,4 @@ function CustomEdge({
   );
 }
 
-export default memo(CustomEdge);
+export default memo(IndividualOwnerEdge);

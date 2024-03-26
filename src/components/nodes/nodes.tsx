@@ -10,8 +10,8 @@ import UnrelatedCompanyIcon from "@/components/icons/UnrelatedCompanyIcon";
 import { Settings, Trash2 } from "react-feather";
 import { COLORS } from "@/components/colors/colors";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { BaseNodeForm } from "@/components/node-form/forms";
-import { IndividualOwnerForm } from "@/components/node-form/individual-owner-form";
+import { BaseNodeForm } from "@/components/node-forms/forms";
+import { IndividualOwnerForm } from "@/components/node-forms/individual-owner-form";
 import NodeHandlers from "@/components/nodes/handlers";
 import { cn } from "@/lib/utils";
 

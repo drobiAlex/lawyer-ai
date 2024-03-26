@@ -24,12 +24,10 @@ import { Select, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TIndividualOwnerConfiguration } from "@/components/nodes/types";
 
 export function IndividualOwnerForm() {
-  const {
-    selectedNode,
-    companyOrgFormsTypes,
-    countries,
-    updateNodeConfiguration,
-  } = useStore(nodeConfigurationSelector, shallow);
+  const { selectedNode, countries, updateNodeConfiguration } = useStore(
+    nodeConfigurationSelector,
+    shallow,
+  );
 
   const nodeType = useMemo(
     () => capitalizeNodeType(selectedNode?.type || ""),
@@ -117,7 +115,7 @@ export function IndividualOwnerForm() {
             </FormItem>
           )}
         />
-        <NodeSheetFooter saveDisabled={false} />
+        <NodeSheetFooter hidden={false} />
       </form>
     </Form>
   );

@@ -36,3 +36,9 @@ export type TBaseNodeData = {
   onConfigIconClick: (nodeId: string | null) => void;
   onDeleteIconClick: (nodeId: string) => void;
 };
+
+export type TEdgeData = {
+  onConfigEdgeIconClick: (edgeId: string | null) => void;
+  // onDeleteEdge: (edgeId: string) => void;
+  edgeConfiguration: any;
+};

@@ -30,6 +30,8 @@ const selector = (state: StoreStateActions) => ({
   nodes: state.nodes,
   edges: state.edges,
   nodeConfig: state.selectedNode,
+  clearNodes: state.clearNodes,
+  clearEdges: state.clearEdges,
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
   onViewPortChange: state.onViewPortChange,
@@ -46,6 +48,8 @@ function StructureCanvas() {
     edges,
     onNodesChange,
     onEdgesChange,
+    clearNodes,
+    clearEdges,
     onViewPortChange,
     addNode,
     onConnect,
@@ -64,6 +68,7 @@ function StructureCanvas() {
   });
 
   useEffect(() => {
+    // TODO - Move this to the store actions
     const restoreFlow = async () => {
       const flowStorage = localStorage.getItem(flowKey);
       if (!flowStorage) {
@@ -72,6 +77,11 @@ function StructureCanvas() {
       const flow = JSON.parse(flowStorage);
       if (flow) {
         const { x = 0, y = 0, zoom = 1 } = flow.viewport;
+
+        // Clear nodes and edges
+        clearNodes();
+        clearEdges();
+
         flow.nodes.forEach((node: TLawframeNode) => {
           const restoredNode = {
             ...node,
@@ -83,7 +93,13 @@ function StructureCanvas() {
           };
           addNode(restoredNode);
         });
+
         flow.edges.forEach((edge: Edge) => {
+          edge.data = {
+            onConfigEdgeIconClick: (edgeId: string) => {
+              console.log("onConfigEdgeIconClick", edgeId);
+            },
+          };
           onConnect({ source: edge.source, target: edge.target } as Connection);
         });
         setViewport({ x, y, zoom });

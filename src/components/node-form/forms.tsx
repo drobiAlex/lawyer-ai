@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,6 +33,10 @@ import {
   NodeSheetHeader,
 } from "@/components/node-form/misc-form";
 import { nodeConfigurationSelector } from "@/common/store/selectors";
+import { Split } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { COLORS } from "@/components/colors/colors";
+import { Button } from "@/components/ui/button";
 
 export function BaseNodeForm() {
   const {
@@ -42,6 +46,7 @@ export function BaseNodeForm() {
     updateNodeConfiguration,
   } = useStore(nodeConfigurationSelector, shallow);
 
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const nodeType = useMemo(
     () => capitalizeNodeType(selectedNode?.type || ""),
     [selectedNode?.type],
@@ -77,7 +82,7 @@ export function BaseNodeForm() {
     defaultValues: getDefaultFormValues(),
   });
 
-  const { control, handleSubmit, watch, register, getValues } = form;
+  const { control, handleSubmit, watch, getValues, formState } = form;
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -111,6 +116,7 @@ export function BaseNodeForm() {
 
   // Handle form submission
   function onSubmit(data: any) {
+    console.log("data on submit", data);
     // Verify selectedNode is not null and update node configuration
     if (!selectedNode?.id) return;
 
@@ -121,9 +127,10 @@ export function BaseNodeForm() {
       people: data.people,
       shareCapital: data.shareCapital,
       directors: data.directors,
-      nodeValidated: false,
+      nodeValidated: true,
     };
     updateNodeConfiguration(selectedNode?.id, nodeConfiguration, false);
+    closeButtonRef.current?.click();
   }
 
   return (
@@ -200,6 +207,7 @@ export function BaseNodeForm() {
           />
           {companyType && (
             <>
+              <Separator className={`my-4 bg-[${COLORS.GREY}]`} />
               {/*<CompanyMembersForm*/}
               {/*  fields={fields}*/}
               {/*  control={control}*/}
@@ -217,7 +225,8 @@ export function BaseNodeForm() {
           {/*)*/}
           {/*}*/}
         </div>
-        <NodeSheetFooter saveDisabled={false} />
+
+        <NodeSheetFooter closeButtonRef={closeButtonRef} />
       </form>
     </Form>
   );

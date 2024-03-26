@@ -22,11 +22,13 @@ import {
   Viewport,
 } from "reactflow";
 import { mountStoreDevtool } from "simple-zustand-devtools";
+import { undefined } from "zod";
 import { create } from "zustand";
 
 import { CompanyOrgForm, CompanyOrgFormType } from "@/common/store/api";
 import {
   TBaseNodeData,
+  TEdgeData,
   TIndividualOwnerConfiguration,
   TMainCompanyConfiguration,
 } from "@/components/nodes/types";
@@ -50,6 +52,7 @@ export type StoreState = {
   nodes: TLawframeNode[];
   edges: Edge[];
   selectedNode: Node | null;
+  selectedEdge: Edge | null;
   nodeTypes: any;
   edgeTypes: any;
   countries: CountryWithFlagEmoji[];
@@ -66,15 +69,22 @@ export type Actions = {
   fetchContainersConfiguration: () => void;
   setSelectedNode: setSelectedNodeType;
   deleteSelectedNode: deleteSelectedNodeType;
+  // eslint-disable-next-line no-unused-vars
+  setSelectedEdge: (edgeId: string | null) => void;
+  // eslint-disable-next-line no-unused-vars
   editSelectedNode: (label: string, type: string) => void;
   updateNodeConfiguration: (
+    // eslint-disable-next-line no-unused-vars
     nodeId: string,
     configuration: TMainCompanyConfiguration | TIndividualOwnerConfiguration,
     temporaryConfiguration: boolean,
   ) => void;
   backup: () => void;
+  deleteBackup: () => void;
   // eslint-disable-next-line no-unused-vars
   onViewPortChange: (viewport: Viewport) => void;
+  clearNodes: () => void;
+  clearEdges: () => void;
 };
 
 // merge state and actions
@@ -89,6 +99,7 @@ const useStore = create<StoreState & Actions>((set, get) => ({
   countries: [],
   supportedCountries: [],
   selectedNode: null,
+  selectedEdge: null,
   companyOrgForms: [],
   companyOrgFormsTypes: [],
   backup: () => {
@@ -97,7 +108,21 @@ const useStore = create<StoreState & Actions>((set, get) => ({
       nodes: get().nodes,
       viewport: get().viewport,
     };
+    get().deleteBackup();
     localStorage.setItem(flowKey, JSON.stringify(flow));
+  },
+  clearNodes: () => {
+    set({
+      nodes: [],
+    });
+  },
+  clearEdges: () => {
+    set({
+      edges: [],
+    });
+  },
+  deleteBackup: () => {
+    localStorage.removeItem(flowKey);
   },
   onViewPortChange: (viewport: Viewport) => {
     set({
@@ -125,7 +150,13 @@ const useStore = create<StoreState & Actions>((set, get) => ({
   },
   onConnect: (connection: Connection | Edge) => {
     if (connection as Edge) {
-      const edge = { ...connection, type: "custom" };
+      const edgeData: TEdgeData = {
+        edgeConfiguration: undefined,
+        onConfigEdgeIconClick: () => {
+          console.log("Edge config icon clicked");
+        },
+      };
+      const edge = { ...connection, type: "custom", data: edgeData };
       set({
         edges: addEdge(edge, get().edges),
       });
@@ -201,6 +232,16 @@ const useStore = create<StoreState & Actions>((set, get) => ({
     set({
       nodes: applyNodeChanges([removeChange], get().nodes),
     });
+  },
+  setSelectedEdge: (edgeId: string | null) => {
+    if (!edgeId) {
+      set({
+        selectedEdge: null,
+      });
+      return;
+    } else {
+      set({ selectedEdge: get().edges.find((n) => n.id === edgeId) });
+    }
   },
   editSelectedNode: (label: string, type: string) => {
     const updatedNodes = get().nodes.map((node) => {

@@ -14,17 +14,17 @@ function getBaseFormSchema(mappedTypes: string[]) {
 
 function getCompanyFormSchema() {
   return z.object({
-    people: z
-      .array(
-        z.object({
-          name: z.string().min(1, { message: "Name is required." }),
-          memberInterest: z.coerce
-            .number()
-            .positive({ message: "Invalid interest. Must be greater than 0." }),
-          residence: z.string().min(2, { message: "Residence is required." }),
-        }),
-      )
-      .min(1, { message: "At least one person is required." }),
+    // people: z
+    //   .array(
+    //     z.object({
+    //       name: z.string().min(1, { message: "Name is required." }),
+    //       memberInterest: z.coerce
+    //         .number()
+    //         .positive({ message: "Invalid interest. Must be greater than 0." }),
+    //       residence: z.string().min(2, { message: "Residence is required." }),
+    //     }),
+    //   )
+    //   .min(1, { message: "At least one person is required." }),
     shareCapital: z.coerce
       .number()
       .positive({ message: "Invalid share capital. Must be greater than 0." }),

@@ -21,17 +21,19 @@ export function NodeSheetHeader({ nodeType }: { nodeType: string }) {
   );
 }
 
-export function NodeSheetFooter({ saveDisabled }: { saveDisabled: boolean }) {
+export function NodeSheetFooter({
+  closeButtonRef,
+}: {
+  closeButtonRef: React.RefObject<HTMLButtonElement>;
+}) {
   return (
-    <SheetFooter>
+    <SheetFooter className="py-4">
       <SheetClose asChild>
-        <Button variant="outline" type="reset">
+        <Button ref={closeButtonRef} variant="outline" type="reset">
           Close
         </Button>
       </SheetClose>
-      <Button disabled={saveDisabled} type="submit">
-        Save changes
-      </Button>
+      <Button type="submit">Save changes</Button>
     </SheetFooter>
   );
 }

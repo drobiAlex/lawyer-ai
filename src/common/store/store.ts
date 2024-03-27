@@ -21,7 +21,6 @@ import {
   Viewport,
 } from "reactflow";
 import { mountStoreDevtool } from "simple-zustand-devtools";
-import { undefined } from "zod";
 import { create } from "zustand";
 
 import { CompanyOrgForm, CompanyOrgFormType } from "@/common/store/api";
@@ -250,7 +249,6 @@ const useStore = create<StoreState & Actions>((set, get) => ({
     });
   },
   setSelectedEdge: (edgeId: string | null) => {
-    console.log("Edge id: ", edgeId);
     if (!edgeId) {
       set({
         selectedEdge: null,
@@ -290,7 +288,6 @@ const useStore = create<StoreState & Actions>((set, get) => ({
 
     // Save to local storage if not temporary
     if (!temporaryConfiguration) {
-      console.log("Updating edge configuration", configuration);
       get().backup();
     }
   },

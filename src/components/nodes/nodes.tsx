@@ -26,7 +26,11 @@ type NodeFormType = {
 
 const nodeFormTypes: NodeFormType = {
   main_company: BaseNodeForm,
+  subsidiary_company: BaseNodeForm,
+  unrelated_company: BaseNodeForm,
   individual_owner: IndividualOwnerForm,
+  client_customer: IndividualOwnerForm,
+  contractor: IndividualOwnerForm,
 };
 
 function NodeSheetForm({ nodeType }: { nodeType: string }) {
@@ -109,10 +113,15 @@ function ContainerNode({ id, type, data }: NodeProps<TBaseNodeData>) {
       </SheetContent>
       <div
         className={cn(
-          "flex flex-row h-full rounded-md border bg-white border-stone-400 cursor-pointer",
+          "flex flex-row h-full rounded-[6px] border bg-white cursor-pointer",
           {
             "p-4": data.isPreview,
-            "px-6 py-8": !data.isPreview,
+            "px-4 py-6": !data.isPreview,
+            "border-stone-400":
+              !data?.nodeConfiguration?.nodeConfigurationSaved,
+            "border-indigo-600":
+              data?.nodeConfiguration?.nodeConfigurationSaved,
+            "border-2": data?.nodeConfiguration?.nodeConfigurationSaved,
           },
         )}
       >
@@ -123,7 +132,9 @@ function ContainerNode({ id, type, data }: NodeProps<TBaseNodeData>) {
             <NodeResizeControl
               style={controlStyle}
               minWidth={400}
-              minHeight={100}
+              minHeight={120}
+              maxWidth={600}
+              maxHeight={300}
             />
             <NodeHandlers nodeType={type} />
           </>

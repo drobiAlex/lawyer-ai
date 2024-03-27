@@ -12,7 +12,7 @@ function getBaseFormSchema(mappedTypes: string[]) {
   });
 }
 
-function getCompanyFormSchema() {
+function llcCompanyFormSchema() {
   return z.object({
     // people: z
     //   .array(
@@ -32,6 +32,39 @@ function getCompanyFormSchema() {
       message: "Invalid number of directors. Must be greater than 0.",
     }),
   });
+}
+
+function stockHoldingCompanyFormSchema() {
+  return llcCompanyFormSchema();
+}
+
+function partnershipCompanyFormSchema() {
+  return z.object({});
+}
+
+function foundationCompanyFormSchema() {
+  return z.object({
+    directors: z.coerce
+      .number()
+      .min(2, {
+        message: "Invalid number of directors. Must be greater than 0.",
+      }),
+  });
+}
+
+function getCompanyFormSchema(companyType: string) {
+  switch (companyType.toLowerCase()) {
+    case "llc":
+      return llcCompanyFormSchema();
+    case "stock_holding_company":
+      return stockHoldingCompanyFormSchema();
+    case "partnership":
+      return partnershipCompanyFormSchema();
+    case "foundation":
+      return foundationCompanyFormSchema();
+    default:
+      return z.object({});
+  }
 }
 
 export { getBaseFormSchema, getCompanyFormSchema };

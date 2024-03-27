@@ -7,8 +7,9 @@ import {
   useReactFlow,
 } from "reactflow";
 import { TBaseEdgeData } from "@/components/nodes/types";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { IndividualOwnerEdgeForm } from "@/components/node-forms/individual-owner-form";
+import { DefaultEdgeActions } from "@/components/edges/DefaultEdge";
 
 function IndividualOwnerEdge({
   id,
@@ -44,11 +45,7 @@ function IndividualOwnerEdge({
     <>
       <BaseEdge path={edgePath} markerEnd={markerEnd} style={style} />
       <EdgeLabelRenderer>
-        <Sheet
-          onOpenChange={(open) => {
-            console.log("open", open);
-          }}
-        >
+        <Sheet>
           <SheetContent className="sm:max-w-none sm:max-w-xl">
             <IndividualOwnerEdgeForm />
           </SheetContent>
@@ -72,23 +69,11 @@ function IndividualOwnerEdge({
                   </span>
                 </div>
               )}
-              <div className="flex justify-center">
-                <button
-                  onClick={onEdgeClick}
-                  className="w-8 h-8 bg-gray-200 border border-white cursor-pointer rounded-full text-md leading-none hover:bg-red-200"
-                >
-                  x
-                </button>
-                <SheetTrigger asChild>
-                  <button
-                    onClick={onEdgeConfigClick}
-                    className="w-8 h-8 bg-gray-200 border border-white cursor-pointer rounded-full text-md leading-none hover:bg-green-300"
-                  >
-                    e
-                  </button>
-                </SheetTrigger>
-              </div>
             </div>
+            <DefaultEdgeActions
+              onEdgeClick={onEdgeClick}
+              onEdgeConfigClick={onEdgeConfigClick}
+            />
           </div>
         </Sheet>
       </EdgeLabelRenderer>

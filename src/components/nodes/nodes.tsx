@@ -10,9 +10,10 @@ import UnrelatedCompanyIcon from "@/components/icons/UnrelatedCompanyIcon";
 import { Settings, Trash2 } from "react-feather";
 import { COLORS } from "@/components/colors/colors";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { BaseNodeForm } from "@/components/node-form/forms";
-import { IndividualOwnerForm } from "@/components/node-form/individual-owner-form";
+import { BaseNodeForm } from "@/components/node-forms/forms";
 import NodeHandlers from "@/components/nodes/handlers";
+import { cn } from "@/lib/utils";
+import { IndividualOwnerForm } from "@/components/node-forms/individual-owner-form";
 
 const controlStyle = {
   background: "transparent",
@@ -106,7 +107,15 @@ function ContainerNode({ id, type, data }: NodeProps<TBaseNodeData>) {
       <SheetContent className="sm:max-w-none sm:max-w-xl">
         <NodeSheetForm nodeType={type} />
       </SheetContent>
-      <div className="flex flex-row h-full px-6 py-8 rounded-md border bg-white border-stone-400 cursor-pointer">
+      <div
+        className={cn(
+          "flex flex-row h-full rounded-md border bg-white border-stone-400 cursor-pointer",
+          {
+            "p-4": data.isPreview,
+            "px-6 py-8": !data.isPreview,
+          },
+        )}
+      >
         <NodeDetails data={data} typeName={typeName} />
         {!data.isPreview && (
           <>

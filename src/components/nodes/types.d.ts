@@ -1,13 +1,13 @@
 import React from "react";
 
 export type TBaseNodeConfiguration = {
-  nodeValidated: boolean;
+  nodeConfigurationSaved: boolean;
   nodeTitle: string;
 };
 
 export type TMainCompanyConfiguration = TBaseNodeConfiguration & {
-  companyResidence?: string | null;
-  companyType: string;
+  residence?: string | null;
+  type: string;
   people: {
     name: string;
     memberInterest: number;
@@ -27,7 +27,7 @@ export type TBaseNodeData = {
     | TMainCompanyConfiguration
     | TIndividualOwnerConfiguration
     | null;
-  nodeTemporaryConfiguration:
+  nodeTempConfiguration:
     | TMainCompanyConfiguration
     | TIndividualOwnerConfiguration
     | null;
@@ -35,4 +35,18 @@ export type TBaseNodeData = {
   IconComponent: React.ReactNode<any> | null;
   onConfigIconClick: (nodeId: string | null) => void;
   onDeleteIconClick: (nodeId: string) => void;
+};
+
+export type TIndividualOwnerEdgeConfiguration = {
+  edgeConfigurationSaved: boolean;
+  sourceNodeId: string;
+  targetNodeId: string;
+  ownershipPercentage: number;
+};
+
+export type TBaseEdgeData = {
+  type?: "individualOwner" | null;
+  onConfigEdgeIconClick: (edgeId: string | null) => void;
+  edgeConfiguration: TIndividualOwnerEdgeConfiguration | null;
+  edgeTempConfiguration: TIndividualOwnerEdgeConfiguration | null;
 };

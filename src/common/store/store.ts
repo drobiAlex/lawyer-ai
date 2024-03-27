@@ -1,11 +1,11 @@
 import axios from "axios";
 import {
+  countries,
   getCountryCode,
   getEmojiFlag,
   ICountry,
   TCountryCode,
 } from "countries-list";
-import { countries } from "countries-list";
 import {
   addEdge,
   applyEdgeChanges,
@@ -16,36 +16,44 @@ import {
   Node,
   NodeChange,
   NodeRemoveChange,
-  OnConnect,
   OnEdgesChange,
   OnNodesChange,
+  Viewport,
 } from "reactflow";
 import { mountStoreDevtool } from "simple-zustand-devtools";
 import { create } from "zustand";
 
 import { CompanyOrgForm, CompanyOrgFormType } from "@/common/store/api";
 import {
+  TBaseEdgeData,
   TBaseNodeData,
   TIndividualOwnerConfiguration,
   TMainCompanyConfiguration,
 } from "@/components/nodes/types";
 import { apiRequestConfig, getEndpoint } from "@/lib/http";
 
-// eslint-disable-next-line no-unused-vars
+export const flowKey = "working-flow";
+
+/* eslint-disable no-unused-vars */
 export type addNodeType = (node: TLawframeNode) => void;
 export type TLawframeNode = Node & {
   data: TBaseNodeData;
 };
+export type TLawframeEdge = Edge & {
+  data: TBaseEdgeData;
+};
+
 export type CountryWithFlagEmoji = ICountry & { flag: string };
-// eslint-disable-next-line no-unused-vars
 type setSelectedNodeType = (nodeId: string | null) => void;
-// eslint-disable-next-line no-unused-vars
 type deleteSelectedNodeType = (nodeId: string) => void;
+type onConnectType = (connection: Connection | TLawframeEdge) => void;
 
 export type StoreState = {
+  viewport: Viewport;
   nodes: TLawframeNode[];
   edges: Edge[];
   selectedNode: Node | null;
+  selectedEdge: Edge | null;
   nodeTypes: any;
   edgeTypes: any;
   countries: CountryWithFlagEmoji[];
@@ -58,22 +66,35 @@ export type Actions = {
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   addNode: addNodeType;
-  onConnect: OnConnect;
+  onConnect: onConnectType;
   fetchContainersConfiguration: () => void;
   setSelectedNode: setSelectedNodeType;
   deleteSelectedNode: deleteSelectedNodeType;
-  editSelectedNode: (label: string, type: string) => void;
+  setSelectedEdge: (edgeId: string | null) => void;
   updateNodeConfiguration: (
     nodeId: string,
     configuration: TMainCompanyConfiguration | TIndividualOwnerConfiguration,
     temporaryConfiguration: boolean,
   ) => void;
+  updateEdgeConfiguration: (
+    edgeId: string,
+    configuration: any,
+    temporaryConfiguration: boolean,
+  ) => void;
+  backup: () => void;
+  deleteBackup: () => void;
+  onViewPortChange: (viewport: Viewport) => void;
+  clearNodes: () => void;
+  clearEdges: () => void;
 };
+
+/* eslint-enable no-unused-vars */
 
 // merge state and actions
 export type StoreStateActions = StoreState & Actions;
 
 const useStore = create<StoreState & Actions>((set, get) => ({
+  viewport: { x: 0, y: 0, zoom: 1 },
   nodes: [],
   edges: [],
   nodeTypes: {},
@@ -81,28 +102,76 @@ const useStore = create<StoreState & Actions>((set, get) => ({
   countries: [],
   supportedCountries: [],
   selectedNode: null,
+  selectedEdge: null,
   companyOrgForms: [],
   companyOrgFormsTypes: [],
+  backup: () => {
+    const flow = {
+      edges: get().edges,
+      nodes: get().nodes,
+      viewport: get().viewport,
+    };
+    get().deleteBackup();
+    localStorage.setItem(flowKey, JSON.stringify(flow));
+  },
+  clearNodes: () => {
+    set({
+      nodes: [],
+    });
+  },
+  clearEdges: () => {
+    set({
+      edges: [],
+    });
+  },
+  deleteBackup: () => {
+    localStorage.removeItem(flowKey);
+  },
+  onViewPortChange: (viewport: Viewport) => {
+    set({
+      viewport: viewport,
+    });
+  },
   onNodesChange: (nodeChanges: NodeChange[]) => {
     set({
       nodes: applyNodeChanges(nodeChanges, get().nodes),
     });
+    // Save to local storage
+    get().backup();
   },
   onEdgesChange: (edgeChanges: EdgeChange[]) => {
     set({
       edges: applyEdgeChanges(edgeChanges, get().edges),
     });
+    // Save to local storage
+    get().backup();
   },
   addNode: (node: Node) => {
     set({
       nodes: [...get().nodes, node],
     });
   },
-  onConnect: (connection: Connection) => {
-    // const edge = { ...connection, type: 'custom' };
+  onConnect: (connection: TLawframeEdge | Connection) => {
+    if ("data" in connection) {
+      const edgeData: TBaseEdgeData = {
+        ...connection.data,
+        onConfigEdgeIconClick: get().setSelectedEdge,
+      };
+      const edge = {
+        ...connection,
+        type: "individual_owner_edge",
+        data: edgeData,
+      };
+      set({
+        edges: addEdge(edge, get().edges),
+      });
+    }
+
     set({
-      edges: addEdge(connection, get().edges),
+      edges: addEdge(connection as Connection, get().edges),
     });
+    // Save to local storage
+    get().backup();
   },
 
   fetchContainersConfiguration: async () => {
@@ -159,7 +228,6 @@ const useStore = create<StoreState & Actions>((set, get) => ({
       set({
         selectedNode: null,
       });
-      return;
     } else {
       set({ selectedNode: get().nodes.find((n) => n.id === nodeId) });
     }
@@ -170,21 +238,50 @@ const useStore = create<StoreState & Actions>((set, get) => ({
       nodes: applyNodeChanges([removeChange], get().nodes),
     });
   },
-  editSelectedNode: (label: string, type: string) => {
-    const updatedNodes = get().nodes.map((node) => {
-      if (node.id !== get().selectedNode?.id) return node;
-      const updatedNodeData: TBaseNodeData = {
-        ...node.data,
-        label: label,
-      };
+  setSelectedEdge: (edgeId: string | null) => {
+    console.log("Edge id: ", edgeId);
+    if (!edgeId) {
+      set({
+        selectedEdge: null,
+      });
+    } else {
+      set({ selectedEdge: get().edges.find((n) => n.id === edgeId) });
+    }
+  },
+  updateEdgeConfiguration: (
+    edgeId: string,
+    configuration: any,
+    temporaryConfiguration: boolean,
+  ) => {
+    const updatedEdges = get().edges.map((edge) => {
+      if (edge.id !== edgeId) return edge;
+      let updatedEdgeData: TBaseEdgeData;
+
+      if (temporaryConfiguration) {
+        updatedEdgeData = {
+          ...edge.data,
+          edgeTempConfiguration: configuration,
+        };
+      } else {
+        updatedEdgeData = {
+          ...edge.data,
+          edgeConfiguration: configuration,
+        };
+      }
       return {
-        ...node,
-        data: updatedNodeData,
+        ...edge,
+        data: updatedEdgeData,
       };
     });
     set({
-      nodes: updatedNodes,
+      edges: updatedEdges,
     });
+
+    // Save to local storage if not temporary
+    if (!temporaryConfiguration) {
+      console.log("Updating edge configuration", configuration);
+      get().backup();
+    }
   },
   updateNodeConfiguration: (
     nodeId: string,
@@ -198,7 +295,7 @@ const useStore = create<StoreState & Actions>((set, get) => ({
       if (temporaryConfiguration) {
         updatedNodeData = {
           ...node.data,
-          nodeTemporaryConfiguration: configuration,
+          nodeTempConfiguration: configuration,
         };
       } else {
         updatedNodeData = {

@@ -41,11 +41,9 @@ function Builder() {
       </div>
       {/* Floating window element */}
       {isToolbarWindowOpen ? (
-        <div
-          className="fixed left-0 top-1/4 -translate-y-16 ml-2 bg-white rounded-xl shadow-2xl"
-          style={{ height: `calc(100% / 1.5)` }}
-        >
-          <div className="flex flex-col relative h-full px-4 overflow-scroll">
+        <div className="fixed left-0 top-1/4 -translate-y-16 ml-2 bg-white rounded-xl shadow-2xl">
+          <h1 className="ps-4 pt-4 text-2xl">Toolbox</h1>
+          <div className="flex flex-col relative px-4 overflow-scroll">
             <div className="flex flex-1">
               <Sidebar />
             </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import useStore from "@/common/store/store";
@@ -20,10 +20,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  getCompanyFormSchema,
   getBaseFormSchema,
+  getCompanyFormSchema,
 } from "@/components/node-forms/schemas/base-form-schemas";
-import { MainCompanyForm } from "@/components/node-forms/main-company-form";
+import {
+  FoundationCompanyForm,
+  LLCCompanyTypeForm,
+  PartnershipCompanyForm,
+  StockHoldingCompanyForm,
+} from "@/components/node-forms/company-type-forms";
 import { TMainCompanyConfiguration } from "@/components/nodes/types";
 import { shallow } from "zustand/shallow";
 import { capitalizeNodeType } from "@/lib/utils";
@@ -33,10 +38,34 @@ import {
   NodeSheetHeader,
 } from "@/components/node-forms/misc-form";
 import { nodeConfigurationSelector } from "@/common/store/selectors";
-import { Split } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { COLORS } from "@/components/colors/colors";
-import { Button } from "@/components/ui/button";
+
+type TCompanyForm<T extends { control: any }> = {
+  [key: string]: React.FC<T>;
+};
+
+const companyFormTypes: TCompanyForm<{ control: any }> = {
+  llc: LLCCompanyTypeForm,
+  stock_holding_company: StockHoldingCompanyForm,
+  partnership: PartnershipCompanyForm,
+  foundation: FoundationCompanyForm,
+};
+
+function CompanyForm({
+  companyType,
+  control,
+}: {
+  companyType: string;
+  control: any;
+}) {
+  const companyTypeNormalised = companyType.toLowerCase().replace(/ /g, "_");
+  const CompanyFormComponent = companyFormTypes[companyTypeNormalised];
+  if (!CompanyFormComponent) {
+    // Handle unknown company types
+    return <div>Error: Unknown company type</div>;
+  }
+  return <CompanyFormComponent control={control} />;
+}
 
 export function BaseNodeForm() {
   const {
@@ -53,8 +82,8 @@ export function BaseNodeForm() {
   );
 
   const [companyType, setCompanyType] = useState(
-    selectedNode?.data?.nodeConfiguration ||
-      selectedNode?.data?.nodeTemporaryConfiguration?.companyType ||
+    selectedNode?.data?.nodeConfiguration?.companyType ||
+      selectedNode?.data?.nodeTempConfiguration?.companyType ||
       "",
   );
 
@@ -64,10 +93,11 @@ export function BaseNodeForm() {
       : type.name;
   });
 
+  // TODO - improve this function to return more generic values
   function getDefaultFormValues() {
     return (
       selectedNode?.data?.nodeConfiguration ||
-      selectedNode?.data?.nodeTemporaryConfiguration || {
+      selectedNode?.data?.nodeTempConfiguration || {
         nodeNamed: "",
         type: "",
         residence: "",
@@ -79,7 +109,9 @@ export function BaseNodeForm() {
   }
 
   const baseFormSchema = getBaseFormSchema(mappedCompanyTypes);
-  const companyFormSchema = companyType ? getCompanyFormSchema() : z.object({});
+  const companyFormSchema = companyType
+    ? getCompanyFormSchema(companyType)
+    : z.object({});
 
   const form = useForm({
     resolver: zodResolver(baseFormSchema.merge(companyFormSchema)),
@@ -88,10 +120,10 @@ export function BaseNodeForm() {
 
   const { control, handleSubmit, watch, getValues, formState } = form;
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "people",
-  });
+  // const { fields, append, remove } = useFieldArray({
+  //   control,
+  //   name: "people",
+  // });
 
   useEffect(() => {
     const subscription = watch((value, { name }) => {
@@ -112,7 +144,7 @@ export function BaseNodeForm() {
       }
       if (name === "type" && value) {
         // @ts-ignore
-        setCompanyType(value);
+        setCompanyType(value.type);
       }
     });
     return () => subscription.unsubscribe();
@@ -120,7 +152,6 @@ export function BaseNodeForm() {
 
   // Handle form submission
   function onSubmit(data: any) {
-    console.log("data on submit", data);
     // Verify selectedNode is not null and update node configuration
     if (!selectedNode?.id) return;
 
@@ -219,15 +250,17 @@ export function BaseNodeForm() {
               {/*  remove={remove}*/}
               {/*  countries={countries}*/}
               {/*/>*/}
-              <MainCompanyForm control={control} />
+              <CompanyForm companyType={companyType} control={control} />
             </>
           )}
 
           {/*Debug form state:*/}
-          {/*{formState.errors && (*/}
-          {/*  <pre>{JSON.stringify(formState.errors, null, 2)}</pre>*/}
-          {/*)*/}
-          {/*}*/}
+          {formState.errors && (
+            <>
+              <pre>{JSON.stringify(formState, null, 2)}</pre>
+              <pre>{JSON.stringify(formState.errors, null, 2)}</pre>
+            </>
+          )}
         </div>
 
         <NodeSheetFooter closeButtonRef={closeButtonRef} />

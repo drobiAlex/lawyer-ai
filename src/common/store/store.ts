@@ -31,6 +31,7 @@ import {
   TMainCompanyConfiguration,
 } from "@/components/nodes/types";
 import { apiRequestConfig, getEndpoint } from "@/lib/http";
+import { uniqueId } from "@/lib/utils";
 
 export const flowKey = "working-flow";
 
@@ -151,25 +152,34 @@ const useStore = create<StoreState & Actions>((set, get) => ({
       nodes: [...get().nodes, node],
     });
   },
-  onConnect: (connection: TLawframeEdge | Connection) => {
-    if ("data" in connection) {
+  onConnect: (params: TLawframeEdge | Connection) => {
+    if ("data" in params) {
       const edgeData: TBaseEdgeData = {
-        ...connection.data,
+        ...params.data,
         onConfigEdgeIconClick: get().setSelectedEdge,
       };
       const edge = {
-        ...connection,
+        ...params,
         type: "individual_owner_edge",
         data: edgeData,
       };
       set({
         edges: addEdge(edge, get().edges),
       });
+    } else {
+      if (!params) return null;
+      const edge: TLawframeEdge = {
+        id: uniqueId(),
+        data: null,
+        source: params.source!,
+        target: params.target!,
+        type: "custom_default",
+      };
+      set({
+        edges: addEdge(edge, get().edges),
+      });
     }
 
-    set({
-      edges: addEdge(connection as Connection, get().edges),
-    });
     // Save to local storage
     get().backup();
   },
@@ -239,7 +249,6 @@ const useStore = create<StoreState & Actions>((set, get) => ({
     });
   },
   setSelectedEdge: (edgeId: string | null) => {
-    console.log("Edge id: ", edgeId);
     if (!edgeId) {
       set({
         selectedEdge: null,
@@ -279,7 +288,6 @@ const useStore = create<StoreState & Actions>((set, get) => ({
 
     // Save to local storage if not temporary
     if (!temporaryConfiguration) {
-      console.log("Updating edge configuration", configuration);
       get().backup();
     }
   },

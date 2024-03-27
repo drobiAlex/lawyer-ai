@@ -32,7 +32,6 @@ import {
   TIndividualOwnerEdgeConfiguration,
 } from "@/components/nodes/types";
 import { Separator } from "@/components/ui/separator";
-import { Arrow } from "@radix-ui/react-arrow";
 import { ArrowRight } from "react-feather";
 
 type TIndividualOwnerOwnership = {
@@ -55,7 +54,7 @@ function IndividualOwnerForm() {
   const getDefaultFormValues = useCallback(() => {
     return (
       selectedNode?.data?.nodeConfiguration ||
-      selectedNode?.data?.nodeTemporaryConfiguration || {
+      selectedNode?.data?.nodeTempConfiguration || {
         nodeTitle: "",
         residence: "",
       }
@@ -67,12 +66,11 @@ function IndividualOwnerForm() {
     defaultValues: getDefaultFormValues(),
   });
 
-  const { control, handleSubmit, watch, register, getValues } =
-    individualOwnerForm;
+  const { control, handleSubmit, watch, getValues } = individualOwnerForm;
 
   // Form watcher
   useEffect(() => {
-    const subscription = individualOwnerForm.watch((values) => {
+    const subscription = individualOwnerForm.watch(() => {
       const formTempState = getValues();
       const nodeTempConfiguration: TIndividualOwnerConfiguration = {
         nodeConfigurationSaved: false,
@@ -169,7 +167,8 @@ function IndividualOwnerForm() {
             </FormItem>
           )}
         />
-        <Separator className="my-4" />
+        {/* Ownership list */}
+        {ownershipsList.length > 0 && <Separator className="my-4" />}
         <IndividualOwnerOwnership ownerships={ownershipsList} />
         <NodeSheetFooter closeButtonRef={closeButtonRef} />
       </form>
@@ -184,9 +183,9 @@ function IndividualOwnerOwnership({
 }) {
   return (
     <>
-      <span>Ownership</span>
       {ownerships.map((ownership, index) => (
         <div key={index} className="flex flex-col py-2 gap-2">
+          {index === 0 && <span>Ownership</span>}
           <div className="flex flex-row w-full space-x-2">
             <FormItem className="flex-grow">
               <div className="flex">
@@ -242,7 +241,7 @@ function IndividualOwnerEdgeForm() {
     resolver: zodResolver(individualFormSchema),
     defaultValues: getDefaultFormValues(),
   });
-  const { control, handleSubmit, formState, getValues, watch } =
+  const { control, handleSubmit, getValues, formState, watch } =
     individualOwnerEdgeForm;
 
   function updateEdgeConfig(dataSource: any, temporaryConfiguration: boolean) {
@@ -254,11 +253,6 @@ function IndividualOwnerEdgeForm() {
     };
 
     if (selectedEdge) {
-      console.log(
-        "Updating edge configuration",
-        dataSource,
-        temporaryConfiguration,
-      );
       updateEdgeConfiguration(
         selectedEdge.id,
         edgeTempConfiguration,
@@ -277,7 +271,6 @@ function IndividualOwnerEdgeForm() {
   }, [watch]);
 
   function onSubmit(data: any) {
-    console.log("On submit", data);
     updateEdgeConfig(data, false);
     closeButtonRef.current?.click();
   }
@@ -308,7 +301,7 @@ function IndividualOwnerEdgeForm() {
               <Input
                 type="text"
                 readOnly
-                placeholder={`${targetNode?.data.nodeConfiguration.nodeTitle} - ${targetNode?.data.nodeConfiguration.residence}`}
+                placeholder={`${targetNode?.data?.nodeConfiguration?.nodeTitle} - ${targetNode?.data?.nodeConfiguration?.residence}`}
               />
             </div>
             <FormMessage />

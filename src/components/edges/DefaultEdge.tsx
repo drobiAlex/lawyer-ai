@@ -7,11 +7,41 @@ import {
   useReactFlow,
 } from "reactflow";
 import { TBaseEdgeData } from "@/components/nodes/types";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { IndividualOwnerEdgeForm } from "@/components/node-forms/individual-owner-form";
-import { DefaultEdgeActions } from "@/components/edges/DefaultEdge";
+import { Edit, XCircle } from "react-feather";
+import { COLORS } from "@/components/colors/colors";
 
-function IndividualOwnerEdge({
+export function DefaultEdgeActions({
+  onEdgeClick,
+  onEdgeConfigClick,
+}: {
+  onEdgeClick: () => void;
+  onEdgeConfigClick: () => void;
+}) {
+  return (
+    <div className="flex justify-center items-center">
+      <div
+        onClick={onEdgeClick}
+        className="flex justify-center items-center w-8 h-8 p-0.5 bg-gray-200 border border-white cursor-pointer rounded-full text-md leading-none hover:bg-red-200"
+        style={{ color: COLORS.GREY }}
+      >
+        <XCircle />
+      </div>
+      <SheetTrigger asChild>
+        <div
+          onClick={onEdgeConfigClick}
+          className="flex justify-center items-center w-8 h-8 p-1 bg-gray-200 border border-white cursor-pointer rounded-full text-md leading-none hover:bg-green-200"
+          style={{ color: COLORS.GREY }}
+        >
+          <Edit />
+        </div>
+      </SheetTrigger>
+    </div>
+  );
+}
+
+function DefaultEdge({
   id,
   sourceX,
   sourceY,
@@ -60,16 +90,6 @@ function IndividualOwnerEdge({
             }}
             className="nodrag nopan"
           >
-            <div className="flex flex-col">
-              {data?.edgeConfiguration?.ownershipPercentage && (
-                <div className="flex p-2 bg-blue-300 rounded">
-                  <span className="font-bold">Ownership:</span>
-                  <span className="ml-1">
-                    {data?.edgeConfiguration?.ownershipPercentage}%
-                  </span>
-                </div>
-              )}
-            </div>
             <DefaultEdgeActions
               onEdgeClick={onEdgeClick}
               onEdgeConfigClick={onEdgeConfigClick}
@@ -81,4 +101,4 @@ function IndividualOwnerEdge({
   );
 }
 
-export default memo(IndividualOwnerEdge);
+export default memo(DefaultEdge);

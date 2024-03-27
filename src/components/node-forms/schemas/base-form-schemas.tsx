@@ -5,8 +5,8 @@ function getBaseFormSchema(mappedTypes: string[]) {
     nodeTitle: z
       .string()
       .min(2, { message: "Node name must be at least 2 characters." }),
-    companyResidence: z.string().min(2, { message: "Residence is required." }),
-    companyType: z.string().refine((val) => mappedTypes.includes(val), {
+    residence: z.string().min(2, { message: "Residence is required." }),
+    type: z.string().refine((val) => mappedTypes.includes(val), {
       message: "Invalid company type.",
     }),
   });

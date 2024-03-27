@@ -157,7 +157,11 @@ const useStore = create<StoreState & Actions>((set, get) => ({
         ...connection.data,
         onConfigEdgeIconClick: get().setSelectedEdge,
       };
-      const edge = { ...connection, type: "custom", data: edgeData };
+      const edge = {
+        ...connection,
+        type: "individual_owner_edge",
+        data: edgeData,
+      };
       set({
         edges: addEdge(edge, get().edges),
       });

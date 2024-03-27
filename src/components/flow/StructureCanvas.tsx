@@ -17,6 +17,7 @@ import { shallow } from "zustand/shallow";
 import useStore, {
   flowKey,
   StoreStateActions,
+  TLawframeEdge,
   TLawframeNode,
 } from "@/common/store/store";
 import CustomEdge from "@/components/edges/IndividualOwnerEdge";
@@ -40,6 +41,7 @@ const selector = (state: StoreStateActions) => ({
   fetchContainersConfiguration: state.fetchContainersConfiguration,
   setSelectedNode: state.setSelectedNode,
   deleteSelectedNode: state.deleteSelectedNode,
+  setSelectedEdge: state.setSelectedEdge,
 });
 
 function StructureCanvas() {
@@ -54,6 +56,7 @@ function StructureCanvas() {
     addNode,
     onConnect,
     setSelectedNode,
+    setSelectedEdge,
     deleteSelectedNode,
     fetchContainersConfiguration,
   } = useStore(selector, shallow);
@@ -96,11 +99,11 @@ function StructureCanvas() {
 
         flow.edges.forEach((edge: Edge) => {
           edge.data = {
-            onConfigEdgeIconClick: (edgeId: string) => {
-              console.log("onConfigEdgeIconClick", edgeId);
-            },
+            onConfigEdgeIconClick: setSelectedEdge,
+            ...edge.data,
           };
-          onConnect({ source: edge.source, target: edge.target } as Connection);
+          onConnect(edge as TLawframeEdge);
+          // onConnect({ source: edge.source, target: edge.target } as Connection);
         });
         setViewport({ x, y, zoom });
       }
@@ -149,7 +152,7 @@ function StructureCanvas() {
         onDeleteIconClick: deleteSelectedNode,
         IconComponent: undefined,
         nodeConfiguration: null,
-        nodeTemporaryConfiguration: null,
+        nodeTempConfiguration: null,
       };
 
       addNode({

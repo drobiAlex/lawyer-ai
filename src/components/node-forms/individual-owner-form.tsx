@@ -1,9 +1,15 @@
 import useStore from "@/common/store/store";
-import { nodeConfigurationSelector } from "@/common/store/selectors";
+import {
+  edgeConfigurationSelector,
+  nodeConfigurationSelector,
+} from "@/common/store/selectors";
 import { shallow } from "zustand/shallow";
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { capitalizeNodeType } from "@/lib/utils";
-import { getIndividualOwnerSchema } from "@/components/node-forms/schemas/individual-owner-schemas";
+import {
+  getIndividualOwnerEdgeSchema,
+  getIndividualOwnerSchema,
+} from "@/components/node-forms/schemas/individual-owner-schemas";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -21,9 +27,14 @@ import {
 } from "@/components/node-forms/misc-form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { TIndividualOwnerConfiguration } from "@/components/nodes/types";
+import {
+  TIndividualOwnerConfiguration,
+  TIndividualOwnerEdgeConfiguration,
+} from "@/components/nodes/types";
+import { Separator } from "@/components/ui/separator";
 
-export function IndividualOwnerForm() {
+function IndividualOwnerForm() {
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const { selectedNode, countries, updateNodeConfiguration } = useStore(
     nodeConfigurationSelector,
     shallow,
@@ -38,6 +49,7 @@ export function IndividualOwnerForm() {
 
   const getDefaultFormValues = useCallback(() => {
     return (
+      selectedNode?.data?.nodeConfiguration ||
       selectedNode?.data?.nodeTemporaryConfiguration || {
         nodeTitle: "",
         residence: "",
@@ -58,7 +70,7 @@ export function IndividualOwnerForm() {
     const subscription = individualOwnerForm.watch((values) => {
       const formTempState = getValues();
       const nodeTempConfiguration: TIndividualOwnerConfiguration = {
-        nodeValidated: false,
+        nodeConfigurationSaved: false,
         nodeTitle: formTempState.nodeTitle,
         residence: formTempState.residence,
       };
@@ -70,7 +82,15 @@ export function IndividualOwnerForm() {
   }, [watch]);
 
   function onSubmit(data: any) {
-    console.log(data);
+    if (!selectedNode?.id) return;
+
+    const nodeConfiguration: TIndividualOwnerConfiguration = {
+      nodeConfigurationSaved: true,
+      nodeTitle: data.nodeTitle,
+      residence: data.residence,
+    };
+    updateNodeConfiguration(selectedNode.id, nodeConfiguration, false);
+    closeButtonRef.current?.click();
   }
 
   return (
@@ -115,8 +135,135 @@ export function IndividualOwnerForm() {
             </FormItem>
           )}
         />
-        <NodeSheetFooter />
+        <NodeSheetFooter closeButtonRef={closeButtonRef} />
       </form>
     </Form>
   );
 }
+
+function IndividualOwnerEdgeForm() {
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const { nodes, selectedEdge, updateEdgeConfiguration } = useStore(
+    edgeConfigurationSelector,
+    shallow,
+  );
+
+  const sourceNode = useMemo(() => {
+    return nodes.find((node) => node.id === selectedEdge?.source);
+  }, [selectedEdge?.source]);
+
+  const targetNode = useMemo(() => {
+    return nodes.find((node) => node.id === selectedEdge?.target);
+  }, [selectedEdge?.target]);
+
+  function getDefaultFormValues() {
+    return {
+      ownershipPercentage:
+        selectedEdge?.data?.edgeConfiguration?.ownershipPercentage || 0,
+    };
+  }
+
+  const individualFormSchema = getIndividualOwnerEdgeSchema();
+  const individualOwnerEdgeForm = useForm({
+    resolver: zodResolver(individualFormSchema),
+    defaultValues: getDefaultFormValues(),
+  });
+  const { control, handleSubmit, formState, getValues, watch } =
+    individualOwnerEdgeForm;
+
+  function updateEdgeConfig(dataSource: any, temporaryConfiguration: boolean) {
+    const edgeTempConfiguration: TIndividualOwnerEdgeConfiguration = {
+      edgeConfigurationSaved: !temporaryConfiguration,
+      sourceNodeId: sourceNode!.id,
+      targetNodeId: targetNode!.id,
+      ownershipPercentage: parseInt(dataSource.ownershipPercentage),
+    };
+
+    if (selectedEdge) {
+      console.log(
+        "Updating edge configuration",
+        dataSource,
+        temporaryConfiguration,
+      );
+      updateEdgeConfiguration(
+        selectedEdge.id,
+        edgeTempConfiguration,
+        temporaryConfiguration,
+      );
+    }
+  }
+
+  useEffect(() => {
+    const sub = watch((value, { name }) => {
+      if (name !== "ownershipPercentage") return;
+      const formTempState = getValues();
+      updateEdgeConfig(formTempState, true);
+    });
+    return () => sub.unsubscribe();
+  }, [watch]);
+
+  function onSubmit(data: any) {
+    console.log("On submit", data);
+    updateEdgeConfig(data, false);
+    closeButtonRef.current?.click();
+  }
+
+  return (
+    <Form {...individualOwnerEdgeForm}>
+      <div className="py-4">{/*<NodeSheetHeader nodeType={nodeType}/>*/}</div>
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-full">
+        <div className="flex flex-row w-full space-x-2">
+          <FormItem className="flex-grow">
+            <div className="flex">
+              <Input
+                type="text"
+                readOnly
+                placeholder={`${sourceNode?.data.nodeConfiguration.nodeTitle} - ${sourceNode?.data.nodeConfiguration.residence}`}
+              />
+            </div>
+            <FormMessage />
+          </FormItem>
+          <FormItem className="flex-grow">
+            <div className="flex">
+              <Input
+                type="text"
+                readOnly
+                placeholder={`${targetNode?.data.nodeConfiguration.nodeTitle} - ${targetNode?.data.nodeConfiguration.companyResidence}`}
+              />
+            </div>
+            <FormMessage />
+          </FormItem>
+        </div>
+        <Separator className="mt-6 mb-3" />
+        <FormField
+          name="ownershipPercentage"
+          control={control}
+          render={({ field }) => (
+            <div className="flex flex-col py-2 gap-2.5">
+              <FormLabel>Ownership percentage</FormLabel>
+              <FormItem className="flex-grow">
+                <Input
+                  type="number"
+                  placeholder="Enter ownership percentage"
+                  {...field}
+                />
+              </FormItem>
+              <FormMessage />
+            </div>
+          )}
+        />
+        <NodeSheetFooter closeButtonRef={closeButtonRef} />
+      </form>
+      {/*Debug form state:*/}
+      {/*{formState.errors && (*/}
+      {/*  <>*/}
+      {/*    <pre>{JSON.stringify(formState, null, 2)}</pre>*/}
+      {/*    <pre>{JSON.stringify(formState.errors, null, 2)}</pre>*/}
+      {/*  </>*/}
+      {/*)*/}
+      {/*}*/}
+    </Form>
+  );
+}
+
+export { IndividualOwnerForm, IndividualOwnerEdgeForm };

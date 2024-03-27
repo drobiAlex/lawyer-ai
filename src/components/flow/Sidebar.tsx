@@ -20,7 +20,7 @@ function Sidebar() {
     onConfigIconClick: () => {},
     onDeleteIconClick: () => {},
     nodeConfiguration: null,
-    nodeTemporaryConfiguration: null,
+    nodeTempConfiguration: null,
   };
   const nodeProps = {
     id: uniqueId(),

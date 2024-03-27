@@ -53,7 +53,9 @@ export function BaseNodeForm() {
   );
 
   const [companyType, setCompanyType] = useState(
-    selectedNode?.data?.nodeTemporaryConfiguration?.companyType || "",
+    selectedNode?.data?.nodeConfiguration ||
+      selectedNode?.data?.nodeTemporaryConfiguration?.companyType ||
+      "",
   );
 
   const mappedCompanyTypes: string[] = companyOrgFormsTypes.map((type) => {
@@ -64,10 +66,12 @@ export function BaseNodeForm() {
 
   function getDefaultFormValues() {
     return (
+      selectedNode?.data?.nodeConfiguration ||
       selectedNode?.data?.nodeTemporaryConfiguration || {
         nodeNamed: "",
-        companyType: "",
-        people: [{ name: "", memberInterest: 0, residence: "" }],
+        type: "",
+        residence: "",
+        // people: [{ name: "", memberInterest: 0, residence: "" }],
         shareCapital: 0,
         directors: 0,
       }
@@ -90,23 +94,23 @@ export function BaseNodeForm() {
   });
 
   useEffect(() => {
-    const subscription = watch((value, { name, type }) => {
+    const subscription = watch((value, { name }) => {
       const formTempState = getValues();
       const nodeTempConfiguration: TMainCompanyConfiguration = {
         nodeTitle: formTempState.nodeTitle,
-        companyResidence: formTempState.companyResidence,
-        companyType: formTempState.companyType,
+        residence: formTempState.residence,
+        type: formTempState.type,
         people: formTempState.people,
         shareCapital: formTempState.shareCapital,
         directors: formTempState.directors,
-        nodeValidated: false,
+        nodeConfigurationSaved: false,
       };
 
       // Verify selectedNode is not null and update node configuration
-      if (!selectedNode?.id) return;
-      updateNodeConfiguration(selectedNode?.id, nodeTempConfiguration, true);
-
-      if (name === "companyType" && value) {
+      if (selectedNode) {
+        updateNodeConfiguration(selectedNode?.id, nodeTempConfiguration, true);
+      }
+      if (name === "type" && value) {
         // @ts-ignore
         setCompanyType(value);
       }
@@ -122,12 +126,12 @@ export function BaseNodeForm() {
 
     const nodeConfiguration: TMainCompanyConfiguration = {
       nodeTitle: data.nodeTitle,
-      companyResidence: data.companyResidence,
-      companyType: data.companyType,
+      residence: data.residence,
+      type: data.type,
       people: data.people,
       shareCapital: data.shareCapital,
       directors: data.directors,
-      nodeValidated: true,
+      nodeConfigurationSaved: true,
     };
     updateNodeConfiguration(selectedNode?.id, nodeConfiguration, false);
     closeButtonRef.current?.click();
@@ -154,7 +158,7 @@ export function BaseNodeForm() {
             )}
           />
           <FormField
-            name="companyResidence"
+            name="residence"
             control={control}
             render={({ field }) => (
               <FormItem>
@@ -177,7 +181,7 @@ export function BaseNodeForm() {
             )}
           />
           <FormField
-            name="companyType"
+            name="type"
             control={control}
             render={({ field }) => (
               <FormItem>
@@ -207,7 +211,7 @@ export function BaseNodeForm() {
           />
           {companyType && (
             <>
-              <Separator className={`my-4 bg-[${COLORS.GREY}]`} />
+              <Separator className="my-4" />
               {/*<CompanyMembersForm*/}
               {/*  fields={fields}*/}
               {/*  control={control}*/}

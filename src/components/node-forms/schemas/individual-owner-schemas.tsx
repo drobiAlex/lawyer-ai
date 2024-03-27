@@ -6,3 +6,11 @@ export function getIndividualOwnerSchema() {
     residence: z.string().min(2, { message: "Residence is required." }),
   });
 }
+
+export function getIndividualOwnerEdgeSchema() {
+  return z.object({
+    ownershipPercentage: z.coerce.number().positive({
+      message: "Ownership percentage must be positive.",
+    }),
+  });
+}

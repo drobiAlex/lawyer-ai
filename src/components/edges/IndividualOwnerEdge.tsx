@@ -3,15 +3,12 @@ import {
   BaseEdge,
   EdgeLabelRenderer,
   EdgeProps,
-  EdgeRemoveChange,
   getBezierPath,
   useReactFlow,
 } from "reactflow";
-import { shallow } from "zustand/shallow";
-import useStore, { StoreStateActions } from "@/common/store/store";
-import { TEdgeData } from "@/components/nodes/types";
+import { TBaseEdgeData } from "@/components/nodes/types";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { IndividualOwnerForm } from "@/components/node-forms/individual-owner-form";
+import { IndividualOwnerEdgeForm } from "@/components/node-forms/individual-owner-form";
 
 function IndividualOwnerEdge({
   id,
@@ -24,7 +21,7 @@ function IndividualOwnerEdge({
   style = {},
   markerEnd,
   data,
-}: EdgeProps<TEdgeData>) {
+}: EdgeProps<TBaseEdgeData>) {
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
@@ -46,6 +43,20 @@ function IndividualOwnerEdge({
   return (
     <>
       <BaseEdge path={edgePath} markerEnd={markerEnd} style={style} />
+      {/*<EdgeLabelRenderer>*/}
+      {/*  <div*/}
+      {/*    // style={{*/}
+      {/*    //   position: "absolute",*/}
+      {/*    //   transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,*/}
+      {/*    //   fontSize: 12,*/}
+      {/*    //   // everything inside EdgeLabelRenderer has no pointer events by default*/}
+      {/*    //   // if you have an interactive element, set pointer-events: all*/}
+      {/*    //   pointerEvents: "all",*/}
+      {/*    // }}*/}
+      {/*    // className="nodrag nopan"*/}
+      {/*  >*/}
+      {/*  </div>*/}
+      {/*</EdgeLabelRenderer>*/}
       <EdgeLabelRenderer>
         <Sheet
           onOpenChange={(open) => {
@@ -53,7 +64,7 @@ function IndividualOwnerEdge({
           }}
         >
           <SheetContent className="sm:max-w-none sm:max-w-xl">
-            <IndividualOwnerForm />
+            <IndividualOwnerEdgeForm />
           </SheetContent>
           <div
             style={{
@@ -66,20 +77,32 @@ function IndividualOwnerEdge({
             }}
             className="nodrag nopan"
           >
-            <button
-              onClick={onEdgeClick}
-              className="w-8 h-8 bg-gray-200 border border-white cursor-pointer rounded-full text-md leading-none hover:bg-red-200"
-            >
-              x
-            </button>
-            <SheetTrigger asChild>
-              <button
-                onClick={onEdgeConfigClick}
-                className="w-8 h-8 bg-gray-200 border border-white cursor-pointer rounded-full text-md leading-none hover:bg-green-300"
-              >
-                e
-              </button>
-            </SheetTrigger>
+            <div className="flex flex-col">
+              {data?.edgeConfiguration?.ownershipPercentage && (
+                <div className="flex p-2 bg-blue-300 rounded">
+                  <span className="font-bold">Ownership:</span>
+                  <span className="ml-1">
+                    {data?.edgeConfiguration?.ownershipPercentage}%
+                  </span>
+                </div>
+              )}
+              <div className="flex justify-center">
+                <button
+                  onClick={onEdgeClick}
+                  className="w-8 h-8 bg-gray-200 border border-white cursor-pointer rounded-full text-md leading-none hover:bg-red-200"
+                >
+                  x
+                </button>
+                <SheetTrigger asChild>
+                  <button
+                    onClick={onEdgeConfigClick}
+                    className="w-8 h-8 bg-gray-200 border border-white cursor-pointer rounded-full text-md leading-none hover:bg-green-300"
+                  >
+                    e
+                  </button>
+                </SheetTrigger>
+              </div>
+            </div>
           </div>
         </Sheet>
       </EdgeLabelRenderer>

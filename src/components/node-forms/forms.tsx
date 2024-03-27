@@ -88,10 +88,10 @@ export function BaseNodeForm() {
 
   const { control, handleSubmit, watch, getValues, formState } = form;
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "people",
-  });
+  // const { fields, append, remove } = useFieldArray({
+  //   control,
+  //   name: "people",
+  // });
 
   useEffect(() => {
     const subscription = watch((value, { name }) => {

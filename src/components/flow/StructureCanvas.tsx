@@ -26,6 +26,7 @@ import { DownloadButton } from "@/components/flow/DownloadButton";
 import { TBaseNodeData } from "@/components/nodes/types";
 import { undefined } from "zod";
 import { randomName, uniqueId } from "@/lib/utils";
+import DefaultEdge from "@/components/edges/DefaultEdge";
 
 const selector = (state: StoreStateActions) => ({
   nodes: state.nodes,
@@ -116,6 +117,7 @@ function StructureCanvas() {
 
   const edgeTypes = useMemo(
     () => ({
+      custom_default: DefaultEdge,
       individual_owner_edge: IndividualOwnerEdge,
     }),
     [],
@@ -175,7 +177,6 @@ function StructureCanvas() {
       edgeTypes={edgeTypes}
       onConnect={onConnect}
       onInit={(onInitHandler) => {
-        console.log("onInitHandler");
         setReactFlowInstance(onInitHandler);
       }}
       onDragOver={onDragOver}

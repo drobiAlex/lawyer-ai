@@ -308,7 +308,7 @@ function IndividualOwnerEdgeForm() {
               <Input
                 type="text"
                 readOnly
-                placeholder={`${targetNode?.data.nodeConfiguration.nodeTitle} - ${targetNode?.data.nodeConfiguration.residence}`}
+                placeholder={`${targetNode?.data?.nodeConfiguration?.nodeTitle} - ${targetNode?.data?.nodeConfiguration?.residence}`}
               />
             </div>
             <FormMessage />

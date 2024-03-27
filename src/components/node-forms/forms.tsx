@@ -255,12 +255,12 @@ export function BaseNodeForm() {
           )}
 
           {/*Debug form state:*/}
-          {formState.errors && (
-            <>
-              <pre>{JSON.stringify(formState, null, 2)}</pre>
-              <pre>{JSON.stringify(formState.errors, null, 2)}</pre>
-            </>
-          )}
+          {/*{formState.errors && (*/}
+          {/*  <>*/}
+          {/*    <pre>{JSON.stringify(formState, null, 2)}</pre>*/}
+          {/*    <pre>{JSON.stringify(formState.errors, null, 2)}</pre>*/}
+          {/*  </>*/}
+          {/*)}*/}
         </div>
 
         <NodeSheetFooter closeButtonRef={closeButtonRef} />

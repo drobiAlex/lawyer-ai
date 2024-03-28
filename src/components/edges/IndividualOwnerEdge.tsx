@@ -6,12 +6,13 @@ import {
   getBezierPath,
   useReactFlow,
 } from "reactflow";
-import { TBaseEdgeData } from "@/components/nodes/types";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { IndividualOwnerEdgeForm } from "@/components/node-forms/individual-owner-form";
 import { DefaultEdgeActions } from "@/components/edges/DefaultEdge";
+import CustomBaseEdge from "@/components/edges/CustomBaseEdge";
+import { TBaseEdgeData } from "@/components/edges/edges";
 
-function IndividualOwnerEdge({
+function IndividualOwnerEdgeOld({
   id,
   sourceX,
   sourceY,
@@ -38,7 +39,7 @@ function IndividualOwnerEdge({
   };
 
   const onEdgeConfigClick = () => {
-    data?.onConfigEdgeIconClick(id);
+    data?.onEdgeConfigClick(id);
   };
 
   return (
@@ -71,12 +72,22 @@ function IndividualOwnerEdge({
               )}
             </div>
             <DefaultEdgeActions
-              onEdgeClick={onEdgeClick}
+              onEdgeRemoveClick={onEdgeClick}
               onEdgeConfigClick={onEdgeConfigClick}
             />
           </div>
         </Sheet>
       </EdgeLabelRenderer>
+    </>
+  );
+}
+
+function IndividualOwnerEdge({ ...props }: EdgeProps<TBaseEdgeData>) {
+  return (
+    <>
+      <CustomBaseEdge {...props}>
+        <IndividualOwnerEdgeForm />
+      </CustomBaseEdge>
     </>
   );
 }

@@ -41,5 +41,9 @@ export function DownloadButton() {
     }).then(downloadImage);
   };
 
-  return <Button onClick={onClick}>Download PDF</Button>;
+  return (
+    <Button className="select-none" onClick={onClick}>
+      Download PDF
+    </Button>
+  );
 }

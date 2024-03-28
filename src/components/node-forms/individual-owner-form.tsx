@@ -123,7 +123,7 @@ function IndividualOwnerForm() {
       .filter(
         (ownership) => ownership.companyName && ownership.ownershipPercentage,
       ); // Filter out invalid entries
-  }, [edges, nodes, selectedNode]);
+  }, [edges, nodes]);
 
   return (
     <Form {...individualOwnerForm}>
@@ -225,9 +225,13 @@ function IndividualOwnerEdgeForm() {
     return nodes.find((node) => node.id === selectedEdge?.source);
   }, [selectedEdge?.source]);
 
+  console.log("source node", sourceNode);
+
   const targetNode = useMemo(() => {
     return nodes.find((node) => node.id === selectedEdge?.target);
   }, [selectedEdge?.target]);
+
+  console.log("target node", targetNode);
 
   function getDefaultFormValues() {
     return {
@@ -244,9 +248,9 @@ function IndividualOwnerEdgeForm() {
   const { control, handleSubmit, getValues, formState, watch } =
     individualOwnerEdgeForm;
 
-  function updateEdgeConfig(dataSource: any, temporaryConfiguration: boolean) {
+  function updateEdgeConfig(dataSource: any, isTemporary: boolean) {
     const edgeTempConfiguration: TIndividualOwnerEdgeConfiguration = {
-      edgeConfigurationSaved: !temporaryConfiguration,
+      edgeConfigurationSaved: !isTemporary,
       sourceNodeId: sourceNode!.id,
       targetNodeId: targetNode!.id,
       ownershipPercentage: parseInt(dataSource.ownershipPercentage),
@@ -256,7 +260,7 @@ function IndividualOwnerEdgeForm() {
       updateEdgeConfiguration(
         selectedEdge.id,
         edgeTempConfiguration,
-        temporaryConfiguration,
+        isTemporary,
       );
     }
   }
@@ -328,13 +332,12 @@ function IndividualOwnerEdgeForm() {
         <NodeSheetFooter closeButtonRef={closeButtonRef} />
       </form>
       {/*Debug form state:*/}
-      {/*{formState.errors && (*/}
-      {/*  <>*/}
-      {/*    <pre>{JSON.stringify(formState, null, 2)}</pre>*/}
-      {/*    <pre>{JSON.stringify(formState.errors, null, 2)}</pre>*/}
-      {/*  </>*/}
-      {/*)*/}
-      {/*}*/}
+      {formState.errors && (
+        <>
+          <pre>{JSON.stringify(formState, null, 2)}</pre>
+          <pre>{JSON.stringify(formState.errors, null, 2)}</pre>
+        </>
+      )}
     </Form>
   );
 }

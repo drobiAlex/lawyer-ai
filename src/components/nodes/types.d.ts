@@ -36,17 +36,3 @@ export type TBaseNodeData = {
   onConfigIconClick: (nodeId: string | null) => void;
   onDeleteIconClick: (nodeId: string) => void;
 };
-
-export type TIndividualOwnerEdgeConfiguration = {
-  edgeConfigurationSaved: boolean;
-  sourceNodeId: string;
-  targetNodeId: string;
-  ownershipPercentage: number;
-};
-
-export type TBaseEdgeData = {
-  type?: "individualOwner" | null;
-  onConfigEdgeIconClick: (edgeId: string | null) => void;
-  edgeConfiguration: TIndividualOwnerEdgeConfiguration | null;
-  edgeTempConfiguration: TIndividualOwnerEdgeConfiguration | null;
-};

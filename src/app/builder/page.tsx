@@ -25,7 +25,7 @@ function Builder() {
     <div className="flex flex-col w-full h-full">
       <div className="flex-1 flex-row">
         <TopToolbar height={toolbarHeight}>
-          <div>Lawframe</div>
+          <div className="select-none">Lawframe</div>
           <UserButton afterSignOutUrl="" />
         </TopToolbar>
       </div>
@@ -42,7 +42,7 @@ function Builder() {
       {/* Floating window element */}
       {isToolbarWindowOpen ? (
         <div className="fixed left-0 top-1/4 -translate-y-16 ml-2 bg-white rounded-xl shadow-2xl">
-          <h1 className="ps-4 pt-4 text-2xl">Toolbox</h1>
+          <h1 className="ps-4 pt-4 text-2xl select-none">Toolbox</h1>
           <div className="flex flex-col relative px-4 overflow-scroll">
             <div className="flex flex-1">
               <Sidebar />

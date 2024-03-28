@@ -44,11 +44,9 @@ function partnershipCompanyFormSchema() {
 
 function foundationCompanyFormSchema() {
   return z.object({
-    directors: z.coerce
-      .number()
-      .min(2, {
-        message: "Invalid number of directors. Must be greater than 0.",
-      }),
+    directors: z.coerce.number().min(2, {
+      message: "Invalid number of directors. Must be greater than 0.",
+    }),
   });
 }
 

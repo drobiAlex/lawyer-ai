@@ -13,6 +13,7 @@ import {
   Connection,
   Edge,
   EdgeChange,
+  EdgeRemoveChange,
   Node,
   NodeChange,
   NodeRemoveChange,
@@ -21,11 +22,12 @@ import {
   Viewport,
 } from "reactflow";
 import { mountStoreDevtool } from "simple-zustand-devtools";
+import { undefined } from "zod";
 import { create } from "zustand";
 
 import { CompanyOrgForm, CompanyOrgFormType } from "@/common/store/api";
+import { TBaseEdgeData } from "@/components/edges/edges";
 import {
-  TBaseEdgeData,
   TBaseNodeData,
   TIndividualOwnerConfiguration,
   TMainCompanyConfiguration,
@@ -156,7 +158,7 @@ const useStore = create<StoreState & Actions>((set, get) => ({
     if ("data" in params) {
       const edgeData: TBaseEdgeData = {
         ...params.data,
-        onConfigEdgeIconClick: get().setSelectedEdge,
+        onEdgeConfigClick: get().setSelectedEdge,
       };
       const edge = {
         ...params,
@@ -168,9 +170,16 @@ const useStore = create<StoreState & Actions>((set, get) => ({
       });
     } else {
       if (!params) return null;
+
+      const edgeData: TBaseEdgeData = {
+        edgeConfiguration: null,
+        edgeTempConfiguration: null,
+        onEdgeConfigClick: get().setSelectedEdge,
+      };
+
       const edge: TLawframeEdge = {
         id: uniqueId(),
-        data: null,
+        data: edgeData,
         source: params.source!,
         target: params.target!,
         type: "custom_default",
@@ -244,11 +253,28 @@ const useStore = create<StoreState & Actions>((set, get) => ({
   },
   deleteSelectedNode: (nodeId: string) => {
     const removeChange: NodeRemoveChange = { id: nodeId, type: "remove" };
+
+    // Filter out connected edges
+    const connectedEdges = get().edges.filter(
+      (edge) => edge.source === nodeId || edge.target === nodeId,
+    );
+    // Create remove changes for connected edges
+    const removeEdgeChanges: EdgeRemoveChange[] = connectedEdges.map((edge) => {
+      return { id: edge.id, type: "remove" };
+    });
+    // Apply edges changes to the store
+    set({
+      edges: applyEdgeChanges(removeEdgeChanges, get().edges),
+    });
+    // Apply node changes to the store
     set({
       nodes: applyNodeChanges([removeChange], get().nodes),
     });
+    // Save to local storage
+    get().backup();
   },
   setSelectedEdge: (edgeId: string | null) => {
+    console.log("edgeId", edgeId);
     if (!edgeId) {
       set({
         selectedEdge: null,
